@@ -1077,7 +1077,6 @@ function updateMarkerInputs() {
     document.getElementById('loop-end-time').textContent = `${(markers.loopEnd / sampleRate).toFixed(3)}s`;
 
     // Set max values
-    const sample = waveformState.samples[waveformState.currentIndex];
     const numFrames = Math.floor(sample.audioData.byteLength /
         (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
 
