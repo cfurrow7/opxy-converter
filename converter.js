@@ -221,7 +221,12 @@ function trimSilence(audioData, wavInfo, thresholdDb = -60) {
                 const b3 = audioData.getInt8(offset + 2);
                 sample = (b1 | (b2 << 8) | (b3 << 16)) / 8388608.0;
             } else if (wavInfo.bitsPerSample === 32) {
-                sample = audioData.getInt32(offset, true) / 2147483648.0;
+                // Check if it's IEEE Float (format 3) or PCM integer (format 1)
+                if (wavInfo.audioFormat === 3) {
+                    sample = audioData.getFloat32(offset, true);
+                } else {
+                    sample = audioData.getInt32(offset, true) / 2147483648.0;
+                }
             }
 
             maxSample = Math.max(maxSample, Math.abs(sample));
@@ -248,7 +253,12 @@ function trimSilence(audioData, wavInfo, thresholdDb = -60) {
                 const b3 = audioData.getInt8(offset + 2);
                 sample = (b1 | (b2 << 8) | (b3 << 16)) / 8388608.0;
             } else if (wavInfo.bitsPerSample === 32) {
-                sample = audioData.getInt32(offset, true) / 2147483648.0;
+                // Check if it's IEEE Float (format 3) or PCM integer (format 1)
+                if (wavInfo.audioFormat === 3) {
+                    sample = audioData.getFloat32(offset, true);
+                } else {
+                    sample = audioData.getInt32(offset, true) / 2147483648.0;
+                }
             }
 
             maxSample = Math.max(maxSample, Math.abs(sample));
