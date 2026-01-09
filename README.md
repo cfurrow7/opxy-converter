@@ -2,7 +2,7 @@
 
 A browser-based tool to convert multisamples to OP-XY format with automatic silence trimming.
 
-**🌐 Live Demo:** [https://yourusername.github.io/opxy-converter](https://yourusername.github.io/opxy-converter) *(update after deployment)*
+**🌐 Live Demo:** [https://cfurrow7.github.io/opxy-converter](https://cfurrow7.github.io/opxy-converter)
 
 ## Features
 
