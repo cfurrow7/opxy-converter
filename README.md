@@ -37,7 +37,13 @@ Visit the live demo URL above and start converting immediately.
 3. Upload the corresponding `.wav` file
 4. Click "Convert to OP-XY Format"
 5. Download the ZIP file
-6. Extract and copy the `.preset` folder to `/TAPE/multisamples/` on your OP-XY
+6. Extract the ZIP to get the `.preset` folder
+7. Copy the `.preset` folder to the `presets/` directory on your OP-XY
+   - Connect OP-XY via USB (disk mode)
+   - Navigate to the `presets/` folder
+   - You can create subfolders for organization (e.g., `presets/elektron/`)
+   - Paste your `.preset` folder
+   - Safely eject the OP-XY
 
 ### Folder Mode
 1. Select "Folder Mode"
@@ -45,7 +51,13 @@ Visit the live demo URL above and start converting immediately.
 3. Select multiple WAV files with note names in filenames
 4. Click "Convert to OP-XY Format"
 5. Download the ZIP file
-6. Extract and copy the `.preset` folder to `/TAPE/multisamples/` on your OP-XY
+6. Extract the ZIP to get the `.preset` folder
+7. Copy the `.preset` folder to the `presets/` directory on your OP-XY
+   - Connect OP-XY via USB (disk mode)
+   - Navigate to the `presets/` folder
+   - You can create subfolders for organization (e.g., `presets/elektron/`)
+   - Paste your `.preset` folder
+   - Safely eject the OP-XY
 
 ## File Naming for Folder Mode
 
@@ -68,13 +80,31 @@ The converter will:
 4. Create proper MIDI key mappings
 5. Generate OP-XY compatible preset
 
+## OP-XY Setup
+
+After conversion, install your preset on the OP-XY:
+
+1. **Connect OP-XY** via USB cable (enters disk mode automatically)
+2. **Navigate** to the `presets/` folder on the OP-XY disk
+3. **Organize** (optional): Create subfolders like `presets/elektron/` or `presets/custom/`
+4. **Copy** the entire `.preset` folder into your chosen location
+5. **Eject** the OP-XY safely
+6. **Browse** presets on your OP-XY - your new preset will appear!
+
+### Important Notes:
+- The `.preset` folder contains both the `patch.json` and all WAV files
+- You can create subfolders inside `presets/` to organize your sounds
+- Folder/file names may only contain: `a-z A-Z 0-9 space # - ( )`
+- OP-XY supports both `.wav` and `.aif` files (mono and stereo)
+
 ## Technical Details
 
 ### Audio Processing
 - **Silence Detection**: -60dB threshold
 - **Frame-by-frame Analysis**: Checks all channels
 - **Format Support**: 16/24/32-bit PCM and 32-bit IEEE Float
-- **Preserves Audio Format**: Maintains source audio encoding
+- **Output Format**: Converts to 16-bit PCM for optimal OP-XY performance
+- **File Size Reduction**: 50-75% smaller than original (32-bit → 16-bit)
 
 ### Key Mapping
 - Automatically calculates key ranges between samples
