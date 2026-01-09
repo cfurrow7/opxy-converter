@@ -39,11 +39,12 @@ Visit the live demo URL above and start converting immediately.
 5. Download the ZIP file
 6. Extract the ZIP to get the `.preset` folder
 7. Copy the `.preset` folder to the `presets/` directory on your OP-XY
-   - Connect OP-XY via USB (disk mode)
+   - Connect OP-XY via USB
+   - Enter disk mode: Hold **OP-XY** button + press **Mic** button
    - Navigate to the `presets/` folder
    - You can create subfolders for organization (e.g., `presets/elektron/`)
    - Paste your `.preset` folder
-   - Safely eject the OP-XY
+   - Safely eject the OP-XY disk
 
 ### Folder Mode
 1. Select "Folder Mode"
@@ -53,11 +54,12 @@ Visit the live demo URL above and start converting immediately.
 5. Download the ZIP file
 6. Extract the ZIP to get the `.preset` folder
 7. Copy the `.preset` folder to the `presets/` directory on your OP-XY
-   - Connect OP-XY via USB (disk mode)
+   - Connect OP-XY via USB
+   - Enter disk mode: Hold **OP-XY** button + press **Mic** button
    - Navigate to the `presets/` folder
    - You can create subfolders for organization (e.g., `presets/elektron/`)
    - Paste your `.preset` folder
-   - Safely eject the OP-XY
+   - Safely eject the OP-XY disk
 
 ## File Naming for Folder Mode
 
@@ -84,12 +86,16 @@ The converter will:
 
 After conversion, install your preset on the OP-XY:
 
-1. **Connect OP-XY** via USB cable (enters disk mode automatically)
-2. **Navigate** to the `presets/` folder on the OP-XY disk
-3. **Organize** (optional): Create subfolders like `presets/elektron/` or `presets/custom/`
-4. **Copy** the entire `.preset` folder into your chosen location
-5. **Eject** the OP-XY safely
-6. **Browse** presets on your OP-XY - your new preset will appear!
+1. **Connect OP-XY** via USB cable to your computer
+2. **Enter Disk Mode** on the OP-XY:
+   - Press and hold the **OP-XY** button (top left)
+   - While holding, press the **Mic** button
+   - The OP-XY will mount as a disk drive
+3. **Navigate** to the `presets/` folder on the OP-XY disk
+4. **Organize** (optional): Create subfolders like `presets/elektron/` or `presets/custom/`
+5. **Copy** the entire `.preset` folder into your chosen location
+6. **Eject** the OP-XY disk safely
+7. **Browse** presets on your OP-XY - your new preset will appear!
 
 ### Important Notes:
 - The `.preset` folder contains both the `patch.json` and all WAV files
