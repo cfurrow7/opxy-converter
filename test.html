@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test - Open Web App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 { color: #667eea; }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        code {
+            background: #f0f4ff;
+            padding: 3px 8px;
+            border-radius: 3px;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <h1>OP-XY Multisample Converter</h1>
+    <p>This test page helps you open the web app.</p>
+
+    <div>
+        <a href="index.html" class="btn">Open Converter</a>
+    </div>
+
+    <hr style="margin: 40px 0;">
+
+    <h2>How to Use</h2>
+    <p>Click the button above, or directly open <code>index.html</code></p>
+
+    <h3>For Best Results:</h3>
+    <p>Run a local server to avoid file restrictions:</p>
+    <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; text-align: left;">
+cd web
+python3 -m http.server 8000</pre>
+    <p>Then visit: <code>http://localhost:8000</code></p>
+
+    <h3>Deploy to GitHub Pages:</h3>
+    <ol style="text-align: left;">
+        <li>Create a GitHub repository</li>
+        <li>Upload <code>index.html</code>, <code>styles.css</code>, <code>converter.js</code></li>
+        <li>Enable GitHub Pages in Settings</li>
+        <li>Access at <code>https://yourusername.github.io/repo-name</code></li>
+    </ol>
+</body>
+</html>
