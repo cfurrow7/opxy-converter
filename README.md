@@ -40,7 +40,7 @@ Visit the live demo URL above and start converting immediately.
 6. Extract the ZIP to get the `.preset` folder
 7. Copy the `.preset` folder to the `presets/` directory on your OP-XY
    - Connect OP-XY via USB
-   - Enter disk mode: Hold **OP-XY** button + press **Mic** button
+   - Enter disk mode: Press **com** button and select **mtp**
    - Navigate to the `presets/` folder
    - You can create subfolders for organization (e.g., `presets/elektron/`)
    - Paste your `.preset` folder
@@ -55,7 +55,7 @@ Visit the live demo URL above and start converting immediately.
 6. Extract the ZIP to get the `.preset` folder
 7. Copy the `.preset` folder to the `presets/` directory on your OP-XY
    - Connect OP-XY via USB
-   - Enter disk mode: Hold **OP-XY** button + press **Mic** button
+   - Enter disk mode: Press **com** button and select **mtp**
    - Navigate to the `presets/` folder
    - You can create subfolders for organization (e.g., `presets/elektron/`)
    - Paste your `.preset` folder
@@ -88,8 +88,7 @@ After conversion, install your preset on the OP-XY:
 
 1. **Connect OP-XY** via USB cable to your computer
 2. **Enter Disk Mode** on the OP-XY:
-   - Press and hold the **OP-XY** button (top left)
-   - While holding, press the **Mic** button
+   - Press the **com** button and select **mtp**
    - The OP-XY will mount as a disk drive
 3. **Navigate** to the `presets/` folder on the OP-XY disk
 4. **Organize** (optional): Create subfolders like `presets/elektron/` or `presets/custom/`
