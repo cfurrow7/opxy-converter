@@ -282,14 +282,63 @@ function trimSilence(audioData, wavInfo, thresholdDb = -60) {
 }
 
 function createWavFile(audioData, wavInfo) {
-    const dataSize = audioData.byteLength;
+    // Convert to 16-bit PCM for optimal OP-XY performance
+    const outputFormat = 1; // PCM
+    const outputBitsPerSample = 16;
+    const bytesPerSample = wavInfo.bitsPerSample / 8;
+    const frameSize = wavInfo.channels * bytesPerSample;
+    const numFrames = Math.floor(audioData.byteLength / frameSize);
+
+    // Convert audio data to 16-bit PCM
+    const outputFrameSize = wavInfo.channels * 2; // 2 bytes per 16-bit sample
+    const outputDataSize = numFrames * outputFrameSize;
+    const outputBuffer = new ArrayBuffer(outputDataSize);
+    const outputView = new DataView(outputBuffer);
+
+    console.log('Converting to 16-bit PCM:', {
+        inputFormat: wavInfo.audioFormat,
+        inputBits: wavInfo.bitsPerSample,
+        frames: numFrames,
+        channels: wavInfo.channels
+    });
+
+    for (let frame = 0; frame < numFrames; frame++) {
+        for (let ch = 0; ch < wavInfo.channels; ch++) {
+            const inputOffset = frame * frameSize + ch * bytesPerSample;
+            const outputOffset = frame * outputFrameSize + ch * 2;
+            let sample = 0;
+
+            // Read sample based on input format
+            if (wavInfo.bitsPerSample === 16) {
+                sample = audioData.getInt16(inputOffset, true) / 32768.0;
+            } else if (wavInfo.bitsPerSample === 24) {
+                const b1 = audioData.getUint8(inputOffset);
+                const b2 = audioData.getUint8(inputOffset + 1);
+                const b3 = audioData.getInt8(inputOffset + 2);
+                sample = (b1 | (b2 << 8) | (b3 << 16)) / 8388608.0;
+            } else if (wavInfo.bitsPerSample === 32) {
+                if (wavInfo.audioFormat === 3) {
+                    sample = audioData.getFloat32(inputOffset, true);
+                } else {
+                    sample = audioData.getInt32(inputOffset, true) / 2147483648.0;
+                }
+            }
+
+            // Clamp to -1.0 to 1.0 range
+            sample = Math.max(-1.0, Math.min(1.0, sample));
+
+            // Convert to 16-bit integer
+            const sample16 = Math.round(sample * 32767);
+            outputView.setInt16(outputOffset, sample16, true);
+        }
+    }
+
     const headerSize = 44;
-    const fileSize = headerSize + dataSize;
-
-    console.log('Creating WAV:', {dataSize, fileSize, channels: wavInfo.channels, sampleRate: wavInfo.sampleRate, bitsPerSample: wavInfo.bitsPerSample});
-
+    const fileSize = headerSize + outputDataSize;
     const buffer = new ArrayBuffer(fileSize);
     const view = new DataView(buffer);
+
+    console.log('Created 16-bit PCM WAV:', {dataSize: outputDataSize, fileSize});
 
     // RIFF header
     view.setUint8(0, 'R'.charCodeAt(0));
@@ -308,23 +357,23 @@ function createWavFile(audioData, wavInfo) {
     view.setUint8(14, 't'.charCodeAt(0));
     view.setUint8(15, ' '.charCodeAt(0));
     view.setUint32(16, 16, true); // fmt chunk size
-    view.setUint16(20, wavInfo.audioFormat, true); // Audio format (1=PCM, 3=IEEE Float)
+    view.setUint16(20, outputFormat, true); // Audio format (1=PCM)
     view.setUint16(22, wavInfo.channels, true);
     view.setUint32(24, wavInfo.sampleRate, true);
-    view.setUint32(28, wavInfo.byteRate, true); // byte rate
-    view.setUint16(32, wavInfo.blockAlign, true); // block align
-    view.setUint16(34, wavInfo.bitsPerSample, true);
+    view.setUint32(28, wavInfo.sampleRate * wavInfo.channels * 2, true); // byte rate (16-bit = 2 bytes)
+    view.setUint16(32, wavInfo.channels * 2, true); // block align (16-bit = 2 bytes)
+    view.setUint16(34, outputBitsPerSample, true); // 16 bits per sample
 
     // data chunk
     view.setUint8(36, 'd'.charCodeAt(0));
     view.setUint8(37, 'a'.charCodeAt(0));
     view.setUint8(38, 't'.charCodeAt(0));
     view.setUint8(39, 'a'.charCodeAt(0));
-    view.setUint32(40, dataSize, true);
+    view.setUint32(40, outputDataSize, true);
 
-    // Copy audio data
-    for (let i = 0; i < dataSize; i++) {
-        view.setUint8(44 + i, audioData.getUint8(i));
+    // Copy converted audio data
+    for (let i = 0; i < outputDataSize; i++) {
+        view.setUint8(44 + i, outputView.getUint8(i));
     }
 
     const blob = new Blob([buffer], { type: 'audio/wav' });
