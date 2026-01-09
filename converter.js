@@ -19,6 +19,9 @@ function switchMode(mode) {
 
     hideProgress();
     hideDownload();
+    if (document.getElementById('waveform-section')) {
+        document.getElementById('waveform-section').classList.add('hidden');
+    }
 }
 
 // File handlers
@@ -383,11 +386,14 @@ function createWavFile(audioData, wavInfo) {
 
 // Elektron conversion
 async function convertElektron() {
+    console.log('convertElektron called');
     showProgress();
     hideDownload();
 
     try {
         log('Reading .elmulti file...');
+        console.log('elmultiFile:', elmultiFile);
+        console.log('wavFile:', wavFile);
         const elmultiText = await elmultiFile.text();
         const elmultiData = parseElmulti(elmultiText);
         console.log('Parsed elmulti:', elmultiData);
@@ -488,11 +494,14 @@ async function convertElektron() {
 
 // Folder conversion
 async function convertFolder() {
+    console.log('convertFolder called');
     showProgress();
     hideDownload();
 
     try {
         const presetName = document.getElementById('preset-name').value.trim();
+        console.log('presetName:', presetName);
+        console.log('wavFiles:', wavFiles);
         log(`Processing ${wavFiles.length} WAV files...`);
         setProgress(10);
 
@@ -728,6 +737,7 @@ let waveformState = {
 };
 
 function showWaveformEditor() {
+    console.log('showWaveformEditor called, samples:', waveformState.samples.length);
     document.getElementById('waveform-section').classList.remove('hidden');
     initWaveformEditor();
 }
@@ -737,9 +747,19 @@ function hideWaveformEditor() {
 }
 
 function initWaveformEditor() {
+    console.log('initWaveformEditor called');
     waveformState.canvas = document.getElementById('waveform-canvas');
     waveformState.ctx = waveformState.canvas.getContext('2d');
-    waveformState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    console.log('Canvas:', waveformState.canvas);
+
+    // Initialize AudioContext (lazily, on first play)
+    if (!waveformState.audioContext) {
+        try {
+            waveformState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.error('AudioContext not available:', e);
+        }
+    }
 
     // Set canvas size to match display size
     const rect = waveformState.canvas.getBoundingClientRect();
@@ -747,7 +767,14 @@ function initWaveformEditor() {
     waveformState.canvas.height = 300 * window.devicePixelRatio;
     waveformState.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-    // Add event listeners
+    // Add event listeners (remove old ones first to avoid duplicates)
+    const canvas = waveformState.canvas;
+    const oldCanvas = canvas.cloneNode(true);
+    canvas.parentNode.replaceChild(oldCanvas, canvas);
+    waveformState.canvas = oldCanvas;
+    waveformState.ctx = oldCanvas.getContext('2d');
+    waveformState.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
     waveformState.canvas.addEventListener('mousedown', onCanvasMouseDown);
     waveformState.canvas.addEventListener('mousemove', onCanvasMouseMove);
     waveformState.canvas.addEventListener('mouseup', onCanvasMouseUp);
@@ -757,8 +784,13 @@ function initWaveformEditor() {
 }
 
 function loadCurrentSample() {
+    console.log('loadCurrentSample called, index:', waveformState.currentIndex);
     const sample = waveformState.samples[waveformState.currentIndex];
-    if (!sample) return;
+    if (!sample) {
+        console.error('No sample at index', waveformState.currentIndex);
+        return;
+    }
+    console.log('Loading sample:', sample.noteName);
 
     // Update UI
     document.getElementById('current-sample-info').textContent =
