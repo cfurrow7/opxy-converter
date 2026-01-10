@@ -869,9 +869,10 @@ function loadCurrentSample() {
 
     // Update playback UI
     document.getElementById('reverse-playback').checked = waveformState.reverse;
-    document.getElementById('loop-crossfade').value = waveformState.crossfade;
-    document.getElementById('sample-gain').value = waveformState.gain;
-    document.getElementById('sample-tune').value = waveformState.tune;
+    document.getElementById('loop-crossfade-slider').value = waveformState.crossfade;
+    document.getElementById('sample-gain-slider').value = waveformState.gain;
+    document.getElementById('sample-tune-slider').value = waveformState.tune;
+    document.getElementById('crossfade-display').textContent = `${waveformState.crossfade} frames`;
     document.getElementById('gain-display').textContent = `${waveformState.gain.toFixed(1)} dB`;
     document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
 
@@ -1257,9 +1258,10 @@ function resetToInitial() {
 
     // Update UI
     document.getElementById('reverse-playback').checked = false;
-    document.getElementById('loop-crossfade').value = 0;
-    document.getElementById('sample-gain').value = 0;
-    document.getElementById('sample-tune').value = 0;
+    document.getElementById('loop-crossfade-slider').value = 0;
+    document.getElementById('sample-gain-slider').value = 0;
+    document.getElementById('sample-tune-slider').value = 0;
+    document.getElementById('crossfade-display').textContent = '0 frames';
     document.getElementById('gain-display').textContent = '0.0 dB';
     document.getElementById('tune-display').textContent = '0 cents';
 
@@ -1326,14 +1328,43 @@ function applyToAll(markerType) {
     log(`Applied ${markerNames[markerType]} to ${appliedCount} samples`);
 }
 
+function updateSlider(settingType) {
+    // Get value from slider
+    let value;
+    switch (settingType) {
+        case 'crossfade':
+            value = parseInt(document.getElementById('loop-crossfade-slider').value);
+            waveformState.crossfade = value;
+            document.getElementById('crossfade-display').textContent = `${value} frames`;
+            break;
+        case 'gain':
+            value = parseFloat(document.getElementById('sample-gain-slider').value);
+            waveformState.gain = value;
+            document.getElementById('gain-display').textContent = `${value.toFixed(1)} dB`;
+            break;
+        case 'tune':
+            value = parseInt(document.getElementById('sample-tune-slider').value);
+            waveformState.tune = value;
+            document.getElementById('tune-display').textContent = `${value} cents`;
+            break;
+    }
+
+    // Save to current sample
+    const sample = waveformState.samples[waveformState.currentIndex];
+    sample.crossfade = waveformState.crossfade;
+    sample.gain = waveformState.gain;
+    sample.tune = waveformState.tune;
+}
+
 function updatePlaybackSettings() {
     // Update current state
     waveformState.reverse = document.getElementById('reverse-playback').checked;
-    waveformState.crossfade = parseInt(document.getElementById('loop-crossfade').value);
-    waveformState.gain = parseFloat(document.getElementById('sample-gain').value);
-    waveformState.tune = parseInt(document.getElementById('sample-tune').value);
+    waveformState.crossfade = parseInt(document.getElementById('loop-crossfade-slider').value);
+    waveformState.gain = parseFloat(document.getElementById('sample-gain-slider').value);
+    waveformState.tune = parseInt(document.getElementById('sample-tune-slider').value);
 
     // Update displays
+    document.getElementById('crossfade-display').textContent = `${waveformState.crossfade} frames`;
     document.getElementById('gain-display').textContent = `${waveformState.gain.toFixed(1)} dB`;
     document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
 
@@ -1469,9 +1500,10 @@ function applyGradient(settingType, curveType) {
     waveformState.tune = currentSample.tune;
 
     // Update UI
-    document.getElementById('loop-crossfade').value = waveformState.crossfade;
-    document.getElementById('sample-gain').value = waveformState.gain;
-    document.getElementById('sample-tune').value = waveformState.tune;
+    document.getElementById('loop-crossfade-slider').value = waveformState.crossfade;
+    document.getElementById('sample-gain-slider').value = waveformState.gain;
+    document.getElementById('sample-tune-slider').value = waveformState.tune;
+    document.getElementById('crossfade-display').textContent = `${waveformState.crossfade} frames`;
     document.getElementById('gain-display').textContent = `${waveformState.gain.toFixed(1)} dB`;
     document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
 
@@ -1519,9 +1551,10 @@ function randomizeAll(settingType) {
     waveformState.tune = currentSample.tune;
 
     // Update UI
-    document.getElementById('loop-crossfade').value = waveformState.crossfade;
-    document.getElementById('sample-gain').value = waveformState.gain;
-    document.getElementById('sample-tune').value = waveformState.tune;
+    document.getElementById('loop-crossfade-slider').value = waveformState.crossfade;
+    document.getElementById('sample-gain-slider').value = waveformState.gain;
+    document.getElementById('sample-tune-slider').value = waveformState.tune;
+    document.getElementById('crossfade-display').textContent = `${waveformState.crossfade} frames`;
     document.getElementById('gain-display').textContent = `${waveformState.gain.toFixed(1)} dB`;
     document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
 
@@ -1604,8 +1637,9 @@ function applyReichPhasing(intensity) {
     waveformState.crossfade = currentSample.crossfade;
 
     // Update UI
-    document.getElementById('loop-crossfade').value = waveformState.crossfade;
-    document.getElementById('sample-tune').value = waveformState.tune;
+    document.getElementById('loop-crossfade-slider').value = waveformState.crossfade;
+    document.getElementById('sample-tune-slider').value = waveformState.tune;
+    document.getElementById('crossfade-display').textContent = `${waveformState.crossfade} frames`;
     document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
 
     // Redraw
