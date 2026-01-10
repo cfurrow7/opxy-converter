@@ -1887,7 +1887,14 @@ async function finalizeConversion() {
             // Adjust loop points relative to the trimmed sample
             const trimmedLoopStart = Math.max(0, markers.loopStart - markers.in);
             const trimmedLoopEnd = Math.max(0, markers.loopEnd - markers.in);
-            const numFrames = markers.out - markers.in + 1;
+
+            // Calculate actual framecount from the WAV blob we just created
+            const actualFramecount = Math.floor((wavBlob.size - 44) / (2 * 2)); // 16-bit stereo
+
+            // Ensure loop end goes to the actual end of the sample
+            const finalLoopEnd = Math.min(trimmedLoopEnd, actualFramecount - 1);
+
+            console.log(`Sample ${sample.noteName}: actualFramecount=${actualFramecount}, trimmedLoopEnd=${trimmedLoopEnd}, finalLoopEnd=${finalLoopEnd}`);
 
             processedSlices.push({
                 note: sample.note,
@@ -1895,7 +1902,7 @@ async function finalizeConversion() {
                 filename: sample.filename,
                 blob: wavBlob,
                 loopStart: trimmedLoopStart,
-                loopEnd: Math.min(trimmedLoopEnd, numFrames - 1),
+                loopEnd: finalLoopEnd,
                 reverse: sample.reverse || false,
                 crossfade: sample.crossfade || 0,
                 gain: sample.gain || 0,
@@ -1931,7 +1938,7 @@ async function createPresetWithLoops(presetName, slices, sampleRate) {
         const framecount = Math.floor((slice.blob.size - 44) / (2 * 2)); // 16-bit stereo assumption
 
         // Log the settings for debugging
-        console.log(`Region ${i}: crossfade=${slice.crossfade}, gain=${slice.gain}, tune=${slice.tune}, reverse=${slice.reverse}`);
+        console.log(`Region ${slice.noteName}: framecount=${framecount}, sample.end=${framecount - 1}, loop.end=${slice.loopEnd}`);
 
         regions.push({
             "sample": slice.filename,
