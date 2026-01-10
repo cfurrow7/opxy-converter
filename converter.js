@@ -1085,12 +1085,44 @@ function drawMarkers(numFrames) {
             ctx.fillText(def.label, x + 13, 21);
         }
     }
+
+    // Draw corner handles
+    const handleSize = 20;
+    const handleDefs = [
+        { key: 'in', x: frameToX(markers.in), y: 0, color: '#4ade80', label: 'IN' },
+        { key: 'out', x: frameToX(markers.out), y: 0, color: '#f87171', label: 'OUT' },
+        { key: 'loopStart', x: frameToX(markers.loopStart), y: height - handleSize, color: '#60a5fa', label: 'LS' },
+        { key: 'loopEnd', x: frameToX(markers.loopEnd), y: height - handleSize, color: '#a78bfa', label: 'LE' }
+    ];
+
+    for (const handle of handleDefs) {
+        if (handle.x >= 0 && handle.x <= width) {
+            // Draw handle rectangle
+            ctx.fillStyle = handle.color;
+            ctx.fillRect(handle.x - handleSize / 2, handle.y, handleSize, handleSize);
+
+            // Draw handle border
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(handle.x - handleSize / 2, handle.y, handleSize, handleSize);
+
+            // Draw label text
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 9px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(handle.label, handle.x, handle.y + handleSize / 2);
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'alphabetic';
+        }
+    }
 }
 
 function onCanvasMouseDown(e) {
     const rect = waveformState.canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const clickedMarker = getMarkerAtX(x);
+    const y = e.clientY - rect.top;
+    const clickedMarker = getMarkerAtPosition(x, y);
 
     if (clickedMarker) {
         waveformState.isDragging = true;
@@ -1099,24 +1131,30 @@ function onCanvasMouseDown(e) {
 }
 
 function onCanvasMouseMove(e) {
-    if (!waveformState.isDragging || !waveformState.dragMarker) return;
-
-    const sample = waveformState.samples[waveformState.currentIndex];
-    const numFrames = Math.floor(sample.audioData.byteLength /
-        (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
-
     const rect = waveformState.canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const width = rect.width;
+    const y = e.clientY - rect.top;
 
-    const startFrame = Math.floor(waveformState.offsetX * numFrames);
-    const visibleFrames = numFrames / waveformState.zoom;
-    const frame = Math.floor(startFrame + (x / width) * visibleFrames);
+    if (waveformState.isDragging && waveformState.dragMarker) {
+        const sample = waveformState.samples[waveformState.currentIndex];
+        const numFrames = Math.floor(sample.audioData.byteLength /
+            (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
 
-    waveformState.markers[waveformState.dragMarker] = Math.max(0, Math.min(numFrames - 1, frame));
+        const width = rect.width;
 
-    drawWaveform();
-    updateMarkerInputs();
+        const startFrame = Math.floor(waveformState.offsetX * numFrames);
+        const visibleFrames = numFrames / waveformState.zoom;
+        const frame = Math.floor(startFrame + (x / width) * visibleFrames);
+
+        waveformState.markers[waveformState.dragMarker] = Math.max(0, Math.min(numFrames - 1, frame));
+
+        drawWaveform();
+        updateMarkerInputs();
+    } else {
+        // Update cursor based on hover
+        const markerAtPos = getMarkerAtPosition(x, y);
+        waveformState.canvas.style.cursor = markerAtPos ? 'ew-resize' : 'default';
+    }
 }
 
 function onCanvasMouseUp() {
@@ -1124,12 +1162,13 @@ function onCanvasMouseUp() {
     waveformState.dragMarker = null;
 }
 
-function getMarkerAtX(x) {
+function getMarkerAtPosition(x, y) {
     const sample = waveformState.samples[waveformState.currentIndex];
     const numFrames = Math.floor(sample.audioData.byteLength /
         (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
 
     const width = waveformState.canvas.width / window.devicePixelRatio;
+    const height = 300;
     const startFrame = Math.floor(waveformState.offsetX * numFrames);
     const visibleFrames = numFrames / waveformState.zoom;
 
@@ -1137,6 +1176,24 @@ function getMarkerAtX(x) {
         return ((frame - startFrame) / visibleFrames) * width;
     }
 
+    const handleSize = 20;
+
+    // Check handles first (priority over marker lines)
+    const handleDefs = [
+        { key: 'in', x: frameToX(waveformState.markers.in), y: 0 },
+        { key: 'out', x: frameToX(waveformState.markers.out), y: 0 },
+        { key: 'loopStart', x: frameToX(waveformState.markers.loopStart), y: height - handleSize },
+        { key: 'loopEnd', x: frameToX(waveformState.markers.loopEnd), y: height - handleSize }
+    ];
+
+    for (const handle of handleDefs) {
+        if (x >= handle.x - handleSize / 2 && x <= handle.x + handleSize / 2 &&
+            y >= handle.y && y <= handle.y + handleSize) {
+            return handle.key;
+        }
+    }
+
+    // Fallback to marker line detection
     const threshold = 5; // pixels
     for (const key of ['in', 'out', 'loopStart', 'loopEnd']) {
         const markerX = frameToX(waveformState.markers[key]);
