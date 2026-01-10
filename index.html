@@ -143,8 +143,8 @@
                         </div>
                         <div class="setting-row">
                             <label for="loop-crossfade">Loop Crossfade:</label>
-                            <input type="range" id="loop-crossfade-slider" min="0" max="5000" value="0" oninput="updateSlider('crossfade')">
-                            <span class="setting-value" id="crossfade-display">0 frames</span>
+                            <input type="range" id="loop-crossfade-slider" min="0" max="100" value="0" oninput="updateSlider('crossfade')">
+                            <span class="setting-value" id="crossfade-display">0%</span>
                             <button class="apply-all-btn" onclick="applyPlaybackToAll('crossfade')" title="Apply crossfade setting to all samples">Apply to All</button>
                             <div class="creative-controls">
                                 <button class="creative-btn" onclick="applyGradient('crossfade', 'linear')" title="Fade from low to high">↗ Fade In</button>
