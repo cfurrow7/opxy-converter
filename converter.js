@@ -1940,8 +1940,11 @@ async function createPresetWithLoops(presetName, slices, sampleRate) {
         // Calculate framecount based on actual channel count (16-bit = 2 bytes per sample)
         const framecount = Math.floor((slice.blob.size - 44) / (2 * slice.channels));
 
+        // Convert crossfade percentage (0-100) to OP-XY range (0-32767)
+        const crossfadeValue = Math.round((slice.crossfade / 100) * 32767);
+
         // Log the settings for debugging
-        console.log(`Region ${slice.noteName}: channels=${slice.channels}, framecount=${framecount}, sample.end=${framecount - 1}, loop.end=${slice.loopEnd}`);
+        console.log(`Region ${slice.noteName}: channels=${slice.channels}, framecount=${framecount}, sample.end=${framecount - 1}, loop.end=${slice.loopEnd}, crossfade=${slice.crossfade}% -> ${crossfadeValue}`);
 
         regions.push({
             "sample": slice.filename,
@@ -1952,7 +1955,7 @@ async function createPresetWithLoops(presetName, slices, sampleRate) {
             "loop.end": slice.loopEnd,
             "loop.enabled": true,
             "loop.onrelease": true,
-            "loop.crossfade": slice.crossfade,
+            "loop.crossfade": crossfadeValue,
             "gain": slice.gain,
             "tune": slice.tune,
             "reverse": slice.reverse,
