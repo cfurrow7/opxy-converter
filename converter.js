@@ -1947,7 +1947,7 @@ async function createPresetWithLoops(presetName, slices, sampleRate) {
             "tune": slice.tune,
             "reverse": slice.reverse,
             "sample.start": 0,
-            "sample.end": framecount,
+            "sample.end": framecount - 1,
             "framecount": framecount
         });
     }
