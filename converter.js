@@ -1410,7 +1410,7 @@ function applyGradient(settingType, curveType) {
 
     // Define ranges for each setting type
     const ranges = {
-        'crossfade': { min: 0, max: 2000 },
+        'crossfade': { min: 0, max: 5000 },
         'gain': { min: -12, max: 6 },
         'tune': { min: -50, max: 50 }
     };
