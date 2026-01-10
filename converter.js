@@ -745,17 +745,18 @@ async function downloadPreset() {
 
     const zip = new JSZip();
     const folder = zip.folder(`${presetData.presetName}.preset`);
+    const now = new Date();
 
-    // Add patch.json
+    // Add patch.json with current timestamp
     const patchJson = JSON.stringify(presetData.patch, null, 2);
     console.log('Patch JSON being added to ZIP:', patchJson);
-    folder.file('patch.json', patchJson);
+    folder.file('patch.json', patchJson, { date: now });
 
-    // Add WAV files
+    // Add WAV files with current timestamp
     log(`Adding ${presetData.slices.length} WAV files to ZIP...`);
     for (const slice of presetData.slices) {
         console.log('Adding slice:', slice.filename, 'Blob size:', slice.blob.size);
-        folder.file(slice.filename, slice.blob);
+        folder.file(slice.filename, slice.blob, { date: now });
     }
 
     log('Creating ZIP file...');
