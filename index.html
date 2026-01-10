@@ -138,6 +138,22 @@
                         </div>
                     </div>
 
+                    <div class="playback-settings">
+                        <h4>Playback Settings</h4>
+                        <div class="setting-row">
+                            <label>
+                                <input type="checkbox" id="reverse-playback" onchange="updatePlaybackSettings()">
+                                Reverse Playback
+                            </label>
+                            <button class="apply-all-btn" onclick="applyPlaybackToAll('reverse')" title="Apply reverse setting to all samples">Apply to All</button>
+                        </div>
+                        <div class="setting-row">
+                            <label for="loop-crossfade">Loop Crossfade (frames):</label>
+                            <input type="number" id="loop-crossfade" min="0" max="10000" value="0" onchange="updatePlaybackSettings()">
+                            <button class="apply-all-btn" onclick="applyPlaybackToAll('crossfade')" title="Apply crossfade setting to all samples">Apply to All</button>
+                        </div>
+                    </div>
+
                     <button class="convert-btn" onclick="finalizeConversion()">Finalize All Samples</button>
                 </div>
             </div>
