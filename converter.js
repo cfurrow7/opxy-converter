@@ -869,7 +869,7 @@ function loadCurrentSample() {
             in: 0,
             out: numFrames - 1,
             loopStart: 0,
-            loopEnd: Math.max(0, numFrames - 2000)
+            loopEnd: numFrames - 1
         };
     }
 
@@ -1270,7 +1270,7 @@ function resetToInitial() {
         in: 0,
         out: numFrames - 1,
         loopStart: 0,
-        loopEnd: Math.max(0, numFrames - 2000)
+        loopEnd: numFrames - 1
     };
     sample.reverse = false;
     sample.crossfade = 0;
@@ -1334,7 +1334,7 @@ function applyToAll(markerType) {
                 in: 0,
                 out: numFrames - 1,
                 loopStart: 0,
-                loopEnd: Math.max(0, numFrames - 2000)
+                loopEnd: numFrames - 1
             };
         }
 
@@ -1626,7 +1626,7 @@ function applyReichPhasing(intensity) {
                 in: 0,
                 out: numFrames - 1,
                 loopStart: 0,
-                loopEnd: Math.max(0, numFrames - 2000)
+                loopEnd: numFrames - 1
             };
         }
 
@@ -1717,7 +1717,7 @@ function applyReichIncremental() {
                 in: 0,
                 out: numFrames - 1,
                 loopStart: 0,
-                loopEnd: Math.max(0, numFrames - 2000)
+                loopEnd: numFrames - 1
             };
         }
 
@@ -1782,7 +1782,7 @@ async function finalizeConversion() {
                     in: 0,
                     out: numFrames - 1,
                     loopStart: 0,
-                    loopEnd: Math.max(0, numFrames - 2000)
+                    loopEnd: numFrames - 1
                 };
             }
 
