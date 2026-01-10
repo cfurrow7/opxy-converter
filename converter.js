@@ -669,9 +669,35 @@ async function createPreset(presetName, slices, sampleRate) {
         patch,
         slices
     };
+
+    // Log the complete patch for debugging
+    console.log('=== GENERATED PATCH.JSON ===');
+    console.log(JSON.stringify(patch, null, 2));
+    console.log('=== REGIONS SUMMARY ===');
+    regions.forEach((region, i) => {
+        console.log(`Region ${i}: crossfade=${region['loop.crossfade']}, gain=${region.gain}, tune=${region.tune}, reverse=${region.reverse}`);
+    });
 }
 
 // Download preset
+function downloadPatchJson() {
+    if (!presetData) {
+        alert('No preset data available. Please convert samples first.');
+        return;
+    }
+
+    const jsonString = JSON.stringify(presetData.patch, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${presetData.presetName}_patch.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    log('Downloaded patch.json for debugging');
+}
+
 async function downloadPreset() {
     if (!presetData) return;
 
@@ -679,7 +705,9 @@ async function downloadPreset() {
     const folder = zip.folder(`${presetData.presetName}.preset`);
 
     // Add patch.json
-    folder.file('patch.json', JSON.stringify(presetData.patch, null, 2));
+    const patchJson = JSON.stringify(presetData.patch, null, 2);
+    console.log('Patch JSON being added to ZIP:', patchJson);
+    folder.file('patch.json', patchJson);
 
     // Add WAV files
     log(`Adding ${presetData.slices.length} WAV files to ZIP...`);
@@ -1657,4 +1685,12 @@ async function createPresetWithLoops(presetName, slices, sampleRate) {
         patch,
         slices
     };
+
+    // Log the complete patch for debugging
+    console.log('=== GENERATED PATCH.JSON ===');
+    console.log(JSON.stringify(patch, null, 2));
+    console.log('=== REGIONS SUMMARY ===');
+    regions.forEach((region, i) => {
+        console.log(`Region ${i}: crossfade=${region['loop.crossfade']}, gain=${region.gain}, tune=${region.tune}, reverse=${region.reverse}`);
+    });
 }
