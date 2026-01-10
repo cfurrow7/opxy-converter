@@ -586,6 +586,65 @@ summary:hover {
     transform: translateY(-1px);
 }
 
+/* Button click feedback animation */
+@keyframes buttonPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    50% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.button-clicked {
+    animation: buttonPulse 0.4s ease-out;
+}
+
+/* Status toast notification */
+.status-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #10b981;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-size: 0.95em;
+    font-weight: bold;
+    z-index: 10000;
+    animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s;
+    pointer-events: none;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
 @media (max-width: 600px) {
     .mode-buttons {
         grid-template-columns: 1fr;

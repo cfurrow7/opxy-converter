@@ -61,6 +61,34 @@ function log(message) {
     logOutput.scrollTop = logOutput.scrollHeight;
 }
 
+// Show toast notification for user actions
+function showToast(message, duration = 3000) {
+    // Remove any existing toast
+    const existingToast = document.querySelector('.status-toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+
+    // Create new toast
+    const toast = document.createElement('div');
+    toast.className = 'status-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    // Auto-remove after duration
+    setTimeout(() => {
+        toast.remove();
+    }, duration);
+}
+
+// Add visual feedback to button clicks
+function addButtonFeedback(button) {
+    button.classList.add('button-clicked');
+    setTimeout(() => {
+        button.classList.remove('button-clicked');
+    }, 400);
+}
+
 function setProgress(percent) {
     document.getElementById('progress-fill').style.width = percent + '%';
 }
@@ -1270,6 +1298,7 @@ function resetToInitial() {
     updateMarkerInputs();
 
     log(`Reset sample ${sample.noteName} to initial settings`);
+    showToast(`✓ Reset ${sample.noteName} to initial settings`);
 }
 
 function applyToAll(markerType) {
@@ -1326,6 +1355,7 @@ function applyToAll(markerType) {
     updateMarkerInputs();
 
     log(`Applied ${markerNames[markerType]} to ${appliedCount} samples`);
+    showToast(`✓ ${markerNames[markerType]} applied to all ${appliedCount} samples`);
 }
 
 function updateSlider(settingType) {
@@ -1434,6 +1464,7 @@ function applyPlaybackToAll(settingType) {
     }
 
     log(`Applied ${settingNames[settingType]} (${valueText}) to ${appliedCount} samples`);
+    showToast(`✓ ${settingNames[settingType]} (${valueText}) applied to all samples`);
 }
 
 function applyGradient(settingType, curveType) {
@@ -1507,7 +1538,15 @@ function applyGradient(settingType, curveType) {
     document.getElementById('gain-display').textContent = `${waveformState.gain.toFixed(1)} dB`;
     document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
 
+    const curveNames = {
+        'linear': 'Linear Fade In',
+        'reverse': 'Linear Fade Out',
+        'exp': 'Exponential Curve',
+        'wave': 'Wave Pattern'
+    };
+
     log(`Applied ${curveType} gradient to ${settingType} across ${numSamples} samples`);
+    showToast(`✓ ${curveNames[curveType]} applied to ${settingType}`);
 }
 
 function randomizeAll(settingType) {
@@ -1559,6 +1598,7 @@ function randomizeAll(settingType) {
     document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
 
     log(`Randomized ${settingType} across ${numSamples} samples`);
+    showToast(`✓ Randomized ${settingType} across all samples`);
 }
 
 function applyReichPhasing(intensity) {
@@ -1654,6 +1694,61 @@ function applyReichPhasing(intensity) {
     };
 
     log(`Applied ${modeNames[intensity]} Steve Reich phasing across ${numSamples} samples`);
+    showToast(`✓ ${modeNames[intensity]} Reich Phasing applied`);
+}
+
+function updateReichSlider() {
+    const value = parseInt(document.getElementById('reich-increment-slider').value);
+    document.getElementById('reich-increment-display').textContent = `${value} frames`;
+}
+
+function applyReichIncremental() {
+    const increment = parseInt(document.getElementById('reich-increment-slider').value);
+    const numSamples = waveformState.samples.length;
+
+    for (let i = 0; i < numSamples; i++) {
+        const sample = waveformState.samples[i];
+        const numFrames = Math.floor(sample.audioData.byteLength /
+            (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
+
+        // Initialize markers if not set
+        if (!sample.markers) {
+            sample.markers = {
+                in: 0,
+                out: numFrames - 1,
+                loopStart: 0,
+                loopEnd: Math.max(0, numFrames - 2000)
+            };
+        }
+
+        // Calculate cumulative shift: sample 0 = +0, sample 1 = +increment, sample 2 = +2*increment, etc.
+        const shiftFrames = i * increment;
+
+        // Get original loop length to preserve it
+        const originalLoopLength = sample.markers.loopEnd - sample.markers.loopStart;
+
+        // Shift loop start forward by cumulative amount, wrapping if needed
+        let newLoopStart = sample.markers.loopStart + shiftFrames;
+
+        // Wrap around if we exceed the sample length
+        while (newLoopStart > numFrames - originalLoopLength - 100) {
+            newLoopStart -= originalLoopLength;
+        }
+
+        sample.markers.loopStart = Math.max(0, Math.min(numFrames - originalLoopLength - 1, newLoopStart));
+        sample.markers.loopEnd = Math.min(numFrames - 1, sample.markers.loopStart + originalLoopLength);
+    }
+
+    // Reload current sample to show updated values
+    const currentSample = waveformState.samples[waveformState.currentIndex];
+    waveformState.markers = {...currentSample.markers};
+
+    // Redraw
+    drawWaveform();
+    updateMarkerInputs();
+
+    log(`Applied incremental Reich phasing: +${increment} frames per sample across ${numSamples} samples`);
+    showToast(`✓ Incremental Phasing: +${increment} frames per sample`);
 }
 
 async function finalizeConversion() {
@@ -1677,6 +1772,26 @@ async function finalizeConversion() {
 
         for (let i = 0; i < waveformState.samples.length; i++) {
             const sample = waveformState.samples[i];
+
+            // Initialize markers if not set (for samples that weren't manually edited)
+            if (!sample.markers) {
+                const numFrames = Math.floor(sample.audioData.byteLength /
+                    (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
+
+                sample.markers = {
+                    in: 0,
+                    out: numFrames - 1,
+                    loopStart: 0,
+                    loopEnd: Math.max(0, numFrames - 2000)
+                };
+            }
+
+            // Initialize playback settings if not set
+            if (sample.reverse === undefined) sample.reverse = false;
+            if (sample.crossfade === undefined) sample.crossfade = 0;
+            if (sample.gain === undefined) sample.gain = 0;
+            if (sample.tune === undefined) sample.tune = 0;
+
             const markers = sample.markers;
 
             log(`Processing ${sample.noteName}...`);
