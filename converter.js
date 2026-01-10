@@ -1136,10 +1136,25 @@ function drawMarkers(numFrames) {
         }
     }
 
-    // Draw crossfade handle on the right side (middle-right)
+    // Draw crossfade visualization as diagonal line (\)
+    // Line goes from bottom-right, extending left based on crossfade percentage
+    const crossfadePercentage = waveformState.crossfade / 100;
+    const crossfadeWidth = width * 0.3 * crossfadePercentage; // Max 30% of width
+
+    // Draw diagonal crossfade line (from bottom-right going up-left)
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 4;
+    ctx.setLineDash([5, 3]); // Dashed line
+    ctx.beginPath();
+    ctx.moveTo(width, height); // Bottom-right corner
+    ctx.lineTo(width - crossfadeWidth, height * 0.3); // Extends left and up based on percentage
+    ctx.stroke();
+    ctx.setLineDash([]); // Reset to solid line
+
+    // Draw crossfade handle at the top-left end of the diagonal line
     const crossfadeHandleSize = 30;
-    const crossfadeHandleX = width - crossfadeHandleSize / 2;
-    const crossfadeHandleY = height / 2 - crossfadeHandleSize / 2;
+    const crossfadeHandleX = width - crossfadeWidth;
+    const crossfadeHandleY = height * 0.3 - crossfadeHandleSize / 2;
 
     // Draw crossfade handle rectangle
     ctx.fillStyle = '#f59e0b'; // Orange color
@@ -1179,9 +1194,11 @@ function onCanvasMouseMove(e) {
 
     if (waveformState.isDragging && waveformState.dragMarker) {
         if (waveformState.dragMarker === 'crossfade') {
-            // Vertical drag for crossfade (0% at bottom, 100% at top)
-            const height = 300;
-            const percentage = Math.max(0, Math.min(100, Math.round((1 - y / height) * 100)));
+            // Horizontal drag for crossfade (100% at left edge, 0% at right edge)
+            const width = rect.width;
+            const maxCrossfadeWidth = width * 0.3;
+            const distanceFromRight = width - x;
+            const percentage = Math.max(0, Math.min(100, Math.round((1 - distanceFromRight / maxCrossfadeWidth) * 100)));
             waveformState.crossfade = percentage;
 
             // Update slider and display
@@ -1210,7 +1227,7 @@ function onCanvasMouseMove(e) {
         // Update cursor based on hover
         const markerAtPos = getMarkerAtPosition(x, y);
         if (markerAtPos === 'crossfade') {
-            waveformState.canvas.style.cursor = 'ns-resize';
+            waveformState.canvas.style.cursor = 'ew-resize';
         } else if (markerAtPos) {
             waveformState.canvas.style.cursor = 'ew-resize';
         } else {
@@ -1240,10 +1257,12 @@ function getMarkerAtPosition(x, y) {
 
     const handleSize = 20;
 
-    // Check crossfade handle first
+    // Check crossfade handle first (positioned at end of diagonal line)
+    const crossfadePercentage = waveformState.crossfade / 100;
+    const crossfadeWidth = width * 0.3 * crossfadePercentage;
     const crossfadeHandleSize = 30;
-    const crossfadeHandleX = width - crossfadeHandleSize / 2;
-    const crossfadeHandleY = height / 2 - crossfadeHandleSize / 2;
+    const crossfadeHandleX = width - crossfadeWidth;
+    const crossfadeHandleY = height * 0.3 - crossfadeHandleSize / 2;
 
     if (x >= crossfadeHandleX - crossfadeHandleSize / 2 && x <= crossfadeHandleX + crossfadeHandleSize / 2 &&
         y >= crossfadeHandleY && y <= crossfadeHandleY + crossfadeHandleSize) {
