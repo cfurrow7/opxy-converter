@@ -1140,7 +1140,7 @@ function drawMarkers(numFrames) {
     // Draw crossfade visualization as diagonal line (\)
     // Line goes from bottom-right to top, extending left based on crossfade percentage
     const crossfadePercentage = waveformState.crossfade / 100;
-    const crossfadeWidth = width * 0.3 * crossfadePercentage; // Max 30% of width
+    const crossfadeWidth = width * crossfadePercentage; // 100% crossfade = full width
 
     // Draw diagonal crossfade line (from bottom-right to top-left)
     ctx.strokeStyle = '#f59e0b';
@@ -1197,9 +1197,8 @@ function onCanvasMouseMove(e) {
         if (waveformState.dragMarker === 'crossfade') {
             // Horizontal drag for crossfade (100% at left edge, 0% at right edge)
             const width = rect.width;
-            const maxCrossfadeWidth = width * 0.3;
             const distanceFromRight = width - x;
-            const percentage = Math.max(0, Math.min(100, Math.round((1 - distanceFromRight / maxCrossfadeWidth) * 100)));
+            const percentage = Math.max(0, Math.min(100, Math.round((1 - distanceFromRight / width) * 100)));
             waveformState.crossfade = percentage;
 
             // Update slider and display
@@ -1260,7 +1259,7 @@ function getMarkerAtPosition(x, y) {
 
     // Check crossfade handle first (positioned at middle of diagonal line)
     const crossfadePercentage = waveformState.crossfade / 100;
-    const crossfadeWidth = width * 0.3 * crossfadePercentage;
+    const crossfadeWidth = width * crossfadePercentage;
     const crossfadeHandleSize = 30;
     const crossfadeHandleX = width - crossfadeWidth / 2;
     const crossfadeHandleY = height / 2 - crossfadeHandleSize / 2;
