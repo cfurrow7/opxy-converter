@@ -1528,6 +1528,100 @@ function randomizeAll(settingType) {
     log(`Randomized ${settingType} across ${numSamples} samples`);
 }
 
+function applyReichPhasing(intensity) {
+    const numSamples = waveformState.samples.length;
+
+    // Phase shift configurations
+    const configs = {
+        'subtle': { loopShift: 50, inShift: 20, detuneRange: 3 },
+        'moderate': { loopShift: 200, inShift: 100, detuneRange: 8 },
+        'extreme': { loopShift: 500, inShift: 300, detuneRange: 15 },
+        'poly': { loopShift: 300, inShift: 150, detuneRange: 12, useGoldenRatio: true }
+    };
+
+    const config = configs[intensity];
+    if (!config) return;
+
+    for (let i = 0; i < numSamples; i++) {
+        const sample = waveformState.samples[i];
+        const numFrames = Math.floor(sample.audioData.byteLength /
+            (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
+
+        // Initialize markers if not set
+        if (!sample.markers) {
+            sample.markers = {
+                in: 0,
+                out: numFrames - 1,
+                loopStart: 0,
+                loopEnd: Math.max(0, numFrames - 2000)
+            };
+        }
+
+        // Calculate phase shift for this sample
+        let phaseRatio;
+        if (config.useGoldenRatio) {
+            // Use golden ratio for polyrhythmic phasing (like Reich's "Piano Phase")
+            const goldenRatio = (1 + Math.sqrt(5)) / 2;
+            phaseRatio = (i * goldenRatio) % 1;
+        } else {
+            // Linear accumulating phase shift
+            phaseRatio = i / (numSamples - 1 || 1);
+        }
+
+        // Apply gradual shift to loop points
+        const loopShiftFrames = Math.round(phaseRatio * config.loopShift);
+        const inShiftFrames = Math.round(phaseRatio * config.inShift);
+
+        // Shift loop start and end (wrapping around)
+        const originalLoopLength = sample.markers.loopEnd - sample.markers.loopStart;
+        sample.markers.loopStart = Math.min(
+            numFrames - originalLoopLength - 1,
+            Math.max(0, sample.markers.loopStart + loopShiftFrames)
+        );
+        sample.markers.loopEnd = Math.min(
+            numFrames - 1,
+            sample.markers.loopStart + originalLoopLength
+        );
+
+        // Subtle in-point shift for additional texture
+        sample.markers.in = Math.min(
+            sample.markers.out - 1000,
+            Math.max(0, inShiftFrames)
+        );
+
+        // Add slight detuning that accumulates (Reich-style drift)
+        const detuneAmount = (phaseRatio - 0.5) * config.detuneRange * 2;
+        sample.tune = Math.round(detuneAmount);
+
+        // Subtle crossfade variation for smoother phasing
+        sample.crossfade = Math.round(100 + phaseRatio * 400);
+    }
+
+    // Reload current sample to show updated values
+    const currentSample = waveformState.samples[waveformState.currentIndex];
+    waveformState.markers = {...currentSample.markers};
+    waveformState.tune = currentSample.tune;
+    waveformState.crossfade = currentSample.crossfade;
+
+    // Update UI
+    document.getElementById('loop-crossfade').value = waveformState.crossfade;
+    document.getElementById('sample-tune').value = waveformState.tune;
+    document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
+
+    // Redraw
+    drawWaveform();
+    updateMarkerInputs();
+
+    const modeNames = {
+        'subtle': 'Subtle',
+        'moderate': 'Moderate',
+        'extreme': 'Extreme',
+        'poly': 'Polyrhythmic'
+    };
+
+    log(`Applied ${modeNames[intensity]} Steve Reich phasing across ${numSamples} samples`);
+}
+
 async function finalizeConversion() {
     // Save current sample markers and settings
     waveformState.samples[waveformState.currentIndex].markers = {...waveformState.markers};

@@ -185,6 +185,17 @@
                         </div>
                     </div>
 
+                    <div class="playback-settings" style="background: #fef3c7; border: 2px solid #f59e0b;">
+                        <h4 style="color: #d97706;">🎵 Steve Reich Phasing</h4>
+                        <p style="font-size: 0.85em; color: #92400e; margin-bottom: 12px;">Create gradually shifting loop points across samples for minimalist phasing effects</p>
+                        <div class="creative-controls">
+                            <button class="creative-btn" onclick="applyReichPhasing('subtle')" style="background: #f59e0b;" title="Subtle phase shift">Subtle Phase</button>
+                            <button class="creative-btn" onclick="applyReichPhasing('moderate')" style="background: #d97706;" title="Moderate phase shift">Moderate Phase</button>
+                            <button class="creative-btn" onclick="applyReichPhasing('extreme')" style="background: #b45309;" title="Extreme phase shift">Extreme Phase</button>
+                            <button class="creative-btn" onclick="applyReichPhasing('poly')" style="background: #92400e;" title="Polyrhythmic phasing">Polyrhythmic</button>
+                        </div>
+                    </div>
+
                     <button class="convert-btn" onclick="finalizeConversion()">Finalize All Samples</button>
                 </div>
             </div>
