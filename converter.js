@@ -1138,24 +1138,24 @@ function drawMarkers(numFrames) {
     }
 
     // Draw crossfade visualization as diagonal line (\)
-    // Line goes from bottom-right, extending left based on crossfade percentage
+    // Line goes from bottom-right to top, extending left based on crossfade percentage
     const crossfadePercentage = waveformState.crossfade / 100;
     const crossfadeWidth = width * 0.3 * crossfadePercentage; // Max 30% of width
 
-    // Draw diagonal crossfade line (from bottom-right going up-left)
+    // Draw diagonal crossfade line (from bottom-right to top-left)
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 4;
     ctx.setLineDash([5, 3]); // Dashed line
     ctx.beginPath();
     ctx.moveTo(width, height); // Bottom-right corner
-    ctx.lineTo(width - crossfadeWidth, height * 0.3); // Extends left and up based on percentage
+    ctx.lineTo(width - crossfadeWidth, 0); // Extends left to top based on percentage
     ctx.stroke();
     ctx.setLineDash([]); // Reset to solid line
 
-    // Draw crossfade handle at the top-left end of the diagonal line
+    // Draw crossfade handle at the middle of the diagonal line
     const crossfadeHandleSize = 30;
-    const crossfadeHandleX = width - crossfadeWidth;
-    const crossfadeHandleY = height * 0.3 - crossfadeHandleSize / 2;
+    const crossfadeHandleX = width - crossfadeWidth / 2;
+    const crossfadeHandleY = height / 2 - crossfadeHandleSize / 2;
 
     // Draw crossfade handle rectangle
     ctx.fillStyle = '#f59e0b'; // Orange color
@@ -1258,12 +1258,12 @@ function getMarkerAtPosition(x, y) {
 
     const handleSize = 20;
 
-    // Check crossfade handle first (positioned at end of diagonal line)
+    // Check crossfade handle first (positioned at middle of diagonal line)
     const crossfadePercentage = waveformState.crossfade / 100;
     const crossfadeWidth = width * 0.3 * crossfadePercentage;
     const crossfadeHandleSize = 30;
-    const crossfadeHandleX = width - crossfadeWidth;
-    const crossfadeHandleY = height * 0.3 - crossfadeHandleSize / 2;
+    const crossfadeHandleX = width - crossfadeWidth / 2;
+    const crossfadeHandleY = height / 2 - crossfadeHandleSize / 2;
 
     if (x >= crossfadeHandleX - crossfadeHandleSize / 2 && x <= crossfadeHandleX + crossfadeHandleSize / 2 &&
         y >= crossfadeHandleY && y <= crossfadeHandleY + crossfadeHandleSize) {
