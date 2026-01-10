@@ -1377,6 +1377,129 @@ function applyPlaybackToAll(settingType) {
     log(`Applied ${settingNames[settingType]} (${valueText}) to ${appliedCount} samples`);
 }
 
+function applyGradient(settingType, curveType) {
+    const numSamples = waveformState.samples.length;
+
+    // Define ranges for each setting type
+    const ranges = {
+        'crossfade': { min: 0, max: 2000 },
+        'gain': { min: -12, max: 6 },
+        'tune': { min: -50, max: 50 }
+    };
+
+    const range = ranges[settingType];
+    if (!range) return;
+
+    for (let i = 0; i < numSamples; i++) {
+        const sample = waveformState.samples[i];
+        const t = i / (numSamples - 1 || 1); // Normalized position (0 to 1)
+
+        let value;
+
+        switch (curveType) {
+            case 'linear':
+                // Linear fade from min to max
+                value = range.min + t * (range.max - range.min);
+                break;
+
+            case 'reverse':
+                // Reverse linear fade from max to min
+                value = range.max - t * (range.max - range.min);
+                break;
+
+            case 'exp':
+                // Exponential curve
+                const expT = Math.pow(t, 2);
+                value = range.min + expT * (range.max - range.min);
+                break;
+
+            case 'wave':
+                // Sine wave pattern
+                const waveT = Math.sin(t * Math.PI * 4);
+                value = waveT * (range.max - range.min) / 2;
+                break;
+        }
+
+        // Apply value based on setting type
+        switch (settingType) {
+            case 'crossfade':
+                sample.crossfade = Math.round(value);
+                break;
+            case 'gain':
+                sample.gain = parseFloat(value.toFixed(1));
+                break;
+            case 'tune':
+                sample.tune = Math.round(value);
+                break;
+        }
+    }
+
+    // Reload current sample to show updated value
+    const currentSample = waveformState.samples[waveformState.currentIndex];
+    waveformState.crossfade = currentSample.crossfade;
+    waveformState.gain = currentSample.gain;
+    waveformState.tune = currentSample.tune;
+
+    // Update UI
+    document.getElementById('loop-crossfade').value = waveformState.crossfade;
+    document.getElementById('sample-gain').value = waveformState.gain;
+    document.getElementById('sample-tune').value = waveformState.tune;
+    document.getElementById('gain-display').textContent = `${waveformState.gain.toFixed(1)} dB`;
+    document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
+
+    log(`Applied ${curveType} gradient to ${settingType} across ${numSamples} samples`);
+}
+
+function randomizeAll(settingType) {
+    const numSamples = waveformState.samples.length;
+
+    // Define ranges and variation for each setting type
+    const configs = {
+        'crossfade': { base: 500, variation: 500, round: true },
+        'gain': { base: 0, variation: 3, round: false },
+        'tune': { base: 0, variation: 10, round: true }
+    };
+
+    const config = configs[settingType];
+    if (!config) return;
+
+    for (let i = 0; i < numSamples; i++) {
+        const sample = waveformState.samples[i];
+
+        // Random value with +/- variation around base
+        const randomValue = config.base + (Math.random() * 2 - 1) * config.variation;
+        const value = config.round ? Math.round(randomValue) : parseFloat(randomValue.toFixed(1));
+
+        // Apply value based on setting type
+        switch (settingType) {
+            case 'crossfade':
+                sample.crossfade = Math.max(0, value);
+                break;
+            case 'gain':
+                sample.gain = value;
+                break;
+            case 'tune':
+                sample.tune = value;
+                break;
+        }
+    }
+
+    // Reload current sample to show updated value
+    const currentSample = waveformState.samples[waveformState.currentIndex];
+    waveformState.crossfade = currentSample.crossfade;
+    waveformState.gain = currentSample.gain;
+    waveformState.tune = currentSample.tune;
+
+    // Update UI
+    document.getElementById('loop-crossfade').value = waveformState.crossfade;
+    document.getElementById('sample-gain').value = waveformState.gain;
+    document.getElementById('sample-tune').value = waveformState.tune;
+    document.getElementById('gain-display').textContent = `${waveformState.gain.toFixed(1)} dB`;
+    document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
+
+    log(`Randomized ${settingType} across ${numSamples} samples`);
+}
+
 async function finalizeConversion() {
     // Save current sample markers and settings
     waveformState.samples[waveformState.currentIndex].markers = {...waveformState.markers};
@@ -1464,6 +1587,9 @@ async function createPresetWithLoops(presetName, slices, sampleRate) {
         const hikey = i === slices.length - 1 ? 127 : Math.floor((slice.note + nextNote) / 2);
 
         const framecount = Math.floor((slice.blob.size - 44) / (2 * 2)); // 16-bit stereo assumption
+
+        // Log the settings for debugging
+        console.log(`Region ${i}: crossfade=${slice.crossfade}, gain=${slice.gain}, tune=${slice.tune}, reverse=${slice.reverse}`);
 
         regions.push({
             "sample": slice.filename,

@@ -480,6 +480,7 @@ summary:hover {
     align-items: center;
     gap: 10px;
     margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
 .setting-row:last-child {
@@ -517,6 +518,29 @@ summary:hover {
     font-size: 0.85em;
     color: #666;
     min-width: 60px;
+}
+
+.creative-controls {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.creative-btn {
+    padding: 4px 10px;
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: all 0.2s;
+}
+
+.creative-btn:hover {
+    background: #7c3aed;
+    transform: translateY(-1px);
 }
 
 @media (max-width: 600px) {
