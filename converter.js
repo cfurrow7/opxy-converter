@@ -745,18 +745,23 @@ async function downloadPreset() {
 
     const zip = new JSZip();
     const folder = zip.folder(`${presetData.presetName}.preset`);
+
+    // Create date adjusted for timezone offset
+    // JSZip stores dates in local time but some systems interpret as UTC
     const now = new Date();
+    const offsetMs = now.getTimezoneOffset() * 60 * 1000;
+    const localDate = new Date(now.getTime() - offsetMs);
 
     // Add patch.json with current timestamp
     const patchJson = JSON.stringify(presetData.patch, null, 2);
     console.log('Patch JSON being added to ZIP:', patchJson);
-    folder.file('patch.json', patchJson, { date: now });
+    folder.file('patch.json', patchJson, { date: localDate });
 
     // Add WAV files with current timestamp
     log(`Adding ${presetData.slices.length} WAV files to ZIP...`);
     for (const slice of presetData.slices) {
         console.log('Adding slice:', slice.filename, 'Blob size:', slice.blob.size);
-        folder.file(slice.filename, slice.blob, { date: now });
+        folder.file(slice.filename, slice.blob, { date: localDate });
     }
 
     log('Creating ZIP file...');
