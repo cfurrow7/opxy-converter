@@ -1047,6 +1047,11 @@ function drawWaveform() {
             }
         }
 
+        // Apply gain scaling for visual feedback (convert dB to linear)
+        const gainMultiplier = Math.pow(10, waveformState.gain / 20);
+        maxSample *= gainMultiplier;
+        minSample *= gainMultiplier;
+
         const y1 = height / 2 + minSample * height / 2.2;
         const y2 = height / 2 + maxSample * height / 2.2;
 
@@ -1130,6 +1135,29 @@ function drawMarkers(numFrames) {
             ctx.textBaseline = 'alphabetic';
         }
     }
+
+    // Draw crossfade handle on the right side (middle-right)
+    const crossfadeHandleSize = 30;
+    const crossfadeHandleX = width - crossfadeHandleSize / 2;
+    const crossfadeHandleY = height / 2 - crossfadeHandleSize / 2;
+
+    // Draw crossfade handle rectangle
+    ctx.fillStyle = '#f59e0b'; // Orange color
+    ctx.fillRect(crossfadeHandleX - crossfadeHandleSize / 2, crossfadeHandleY, crossfadeHandleSize, crossfadeHandleSize);
+
+    // Draw handle border
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(crossfadeHandleX - crossfadeHandleSize / 2, crossfadeHandleY, crossfadeHandleSize, crossfadeHandleSize);
+
+    // Draw crossfade percentage text
+    ctx.fillStyle = '#000';
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${waveformState.crossfade}%`, crossfadeHandleX, crossfadeHandleY + crossfadeHandleSize / 2);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
 }
 
 function onCanvasMouseDown(e) {
@@ -1150,24 +1178,44 @@ function onCanvasMouseMove(e) {
     const y = e.clientY - rect.top;
 
     if (waveformState.isDragging && waveformState.dragMarker) {
-        const sample = waveformState.samples[waveformState.currentIndex];
-        const numFrames = Math.floor(sample.audioData.byteLength /
-            (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
+        if (waveformState.dragMarker === 'crossfade') {
+            // Vertical drag for crossfade (0% at bottom, 100% at top)
+            const height = 300;
+            const percentage = Math.max(0, Math.min(100, Math.round((1 - y / height) * 100)));
+            waveformState.crossfade = percentage;
 
-        const width = rect.width;
+            // Update slider and display
+            document.getElementById('loop-crossfade-slider').value = percentage;
+            document.getElementById('crossfade-display').textContent = `${percentage}%`;
 
-        const startFrame = Math.floor(waveformState.offsetX * numFrames);
-        const visibleFrames = numFrames / waveformState.zoom;
-        const frame = Math.floor(startFrame + (x / width) * visibleFrames);
+            drawWaveform();
+        } else {
+            // Horizontal drag for markers
+            const sample = waveformState.samples[waveformState.currentIndex];
+            const numFrames = Math.floor(sample.audioData.byteLength /
+                (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
 
-        waveformState.markers[waveformState.dragMarker] = Math.max(0, Math.min(numFrames - 1, frame));
+            const width = rect.width;
 
-        drawWaveform();
-        updateMarkerInputs();
+            const startFrame = Math.floor(waveformState.offsetX * numFrames);
+            const visibleFrames = numFrames / waveformState.zoom;
+            const frame = Math.floor(startFrame + (x / width) * visibleFrames);
+
+            waveformState.markers[waveformState.dragMarker] = Math.max(0, Math.min(numFrames - 1, frame));
+
+            drawWaveform();
+            updateMarkerInputs();
+        }
     } else {
         // Update cursor based on hover
         const markerAtPos = getMarkerAtPosition(x, y);
-        waveformState.canvas.style.cursor = markerAtPos ? 'ew-resize' : 'default';
+        if (markerAtPos === 'crossfade') {
+            waveformState.canvas.style.cursor = 'ns-resize';
+        } else if (markerAtPos) {
+            waveformState.canvas.style.cursor = 'ew-resize';
+        } else {
+            waveformState.canvas.style.cursor = 'default';
+        }
     }
 }
 
@@ -1192,7 +1240,17 @@ function getMarkerAtPosition(x, y) {
 
     const handleSize = 20;
 
-    // Check handles first (priority over marker lines)
+    // Check crossfade handle first
+    const crossfadeHandleSize = 30;
+    const crossfadeHandleX = width - crossfadeHandleSize / 2;
+    const crossfadeHandleY = height / 2 - crossfadeHandleSize / 2;
+
+    if (x >= crossfadeHandleX - crossfadeHandleSize / 2 && x <= crossfadeHandleX + crossfadeHandleSize / 2 &&
+        y >= crossfadeHandleY && y <= crossfadeHandleY + crossfadeHandleSize) {
+        return 'crossfade';
+    }
+
+    // Check handles (priority over marker lines)
     const handleDefs = [
         { key: 'in', x: frameToX(waveformState.markers.in), y: 0 },
         { key: 'out', x: frameToX(waveformState.markers.out), y: 0 },
@@ -1455,6 +1513,11 @@ function updateSlider(settingType) {
     sample.crossfade = waveformState.crossfade;
     sample.gain = waveformState.gain;
     sample.tune = waveformState.tune;
+
+    // Redraw waveform to show gain changes
+    if (settingType === 'gain') {
+        drawWaveform();
+    }
 }
 
 function updatePlaybackSettings() {
