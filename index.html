@@ -18,8 +18,8 @@
                 <h2>Choose Conversion Mode</h2>
                 <div class="mode-buttons">
                     <button id="elektron-mode-btn" class="mode-btn active" onclick="switchMode('elektron')">
-                        <strong>Elektron Mode</strong>
-                        <span>.elmulti + .wav files</span>
+                        <strong>Elektron Tonverk Mode</strong>
+                        <span>Select folder with .elmulti + .wav</span>
                     </button>
                     <button id="folder-mode-btn" class="mode-btn" onclick="switchMode('folder')">
                         <strong>Folder Mode</strong>
@@ -30,23 +30,15 @@
 
             <!-- Elektron Mode -->
             <div id="elektron-mode" class="mode-panel active">
-                <h3>Elektron Mode</h3>
-                <p>Upload an Elektron .elmulti file and its corresponding .wav file</p>
+                <h3>Elektron Tonverk Mode</h3>
+                <p>Select a folder containing an Elektron .elmulti file and its corresponding .wav file</p>
 
                 <div class="file-input-group">
-                    <label for="elmulti-file">
-                        <strong>.elmulti file:</strong>
-                        <input type="file" id="elmulti-file" accept=".elmulti" onchange="handleElmultiFile(event)">
+                    <label for="elektron-folder">
+                        <strong>Select Folder:</strong>
+                        <input type="file" id="elektron-folder" webkitdirectory directory multiple onchange="handleElektronFolder(event)">
                     </label>
-                    <span id="elmulti-filename" class="filename"></span>
-                </div>
-
-                <div class="file-input-group">
-                    <label for="wav-file">
-                        <strong>.wav file:</strong>
-                        <input type="file" id="wav-file" accept=".wav" onchange="handleWavFile(event)">
-                    </label>
-                    <span id="wav-filename" class="filename"></span>
+                    <span id="elektron-folder-info" class="filename"></span>
                 </div>
 
                 <button id="convert-elektron-btn" class="convert-btn" onclick="convertElektron()" disabled>

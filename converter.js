@@ -25,15 +25,29 @@ function switchMode(mode) {
 }
 
 // File handlers
-function handleElmultiFile(event) {
-    elmultiFile = event.target.files[0];
-    document.getElementById('elmulti-filename').textContent = elmultiFile ? elmultiFile.name : '';
-    updateConvertButton();
-}
+function handleElektronFolder(event) {
+    const files = Array.from(event.target.files);
 
-function handleWavFile(event) {
-    wavFile = event.target.files[0];
-    document.getElementById('wav-filename').textContent = wavFile ? wavFile.name : '';
+    // Find .elmulti and .wav files
+    elmultiFile = files.find(f => f.name.toLowerCase().endsWith('.elmulti'));
+    wavFile = files.find(f => f.name.toLowerCase().endsWith('.wav'));
+
+    const infoSpan = document.getElementById('elektron-folder-info');
+
+    if (elmultiFile && wavFile) {
+        infoSpan.textContent = `✓ Found: ${elmultiFile.name} and ${wavFile.name}`;
+        infoSpan.style.color = '#10b981';
+    } else if (elmultiFile) {
+        infoSpan.textContent = `⚠ Found .elmulti but missing .wav file`;
+        infoSpan.style.color = '#f59e0b';
+    } else if (wavFile) {
+        infoSpan.textContent = `⚠ Found .wav but missing .elmulti file`;
+        infoSpan.style.color = '#f59e0b';
+    } else {
+        infoSpan.textContent = `✗ No .elmulti or .wav files found in this folder`;
+        infoSpan.style.color = '#ef4444';
+    }
+
     updateConvertButton();
 }
 
