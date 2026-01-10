@@ -1165,6 +1165,72 @@ function resetZoom() {
     drawWaveform();
 }
 
+function applyToAll(markerType) {
+    // Save current sample's markers first
+    waveformState.samples[waveformState.currentIndex].markers = {...waveformState.markers};
+
+    const currentValue = waveformState.markers[markerType];
+    const currentSample = waveformState.samples[waveformState.currentIndex];
+    const currentNumFrames = Math.floor(currentSample.audioData.byteLength /
+        (currentSample.wavInfo.channels * currentSample.wavInfo.bitsPerSample / 8));
+
+    // Calculate the relative position (0.0 to 1.0)
+    const relativePosition = currentValue / currentNumFrames;
+
+    // Confirm with user
+    const markerNames = {
+        'in': 'In Point',
+        'out': 'Out Point',
+        'loopStart': 'Loop Start',
+        'loopEnd': 'Loop End'
+    };
+
+    const confirmed = confirm(
+        `Apply ${markerNames[markerType]} at ${(relativePosition * 100).toFixed(1)}% to all ${waveformState.samples.length} samples?\n\n` +
+        `Current sample: frame ${currentValue} of ${currentNumFrames}\n` +
+        `This will set the ${markerNames[markerType]} proportionally for each sample based on its length.`
+    );
+
+    if (!confirmed) return;
+
+    // Apply to all samples
+    let appliedCount = 0;
+    for (let i = 0; i < waveformState.samples.length; i++) {
+        const sample = waveformState.samples[i];
+
+        // Initialize markers if not set
+        if (!sample.markers) {
+            const numFrames = Math.floor(sample.audioData.byteLength /
+                (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
+
+            sample.markers = {
+                in: 0,
+                out: numFrames - 1,
+                loopStart: 0,
+                loopEnd: Math.max(0, numFrames - 2000)
+            };
+        }
+
+        // Calculate the frame for this sample based on relative position
+        const sampleNumFrames = Math.floor(sample.audioData.byteLength /
+            (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
+
+        const newValue = Math.round(relativePosition * sampleNumFrames);
+        const clampedValue = Math.max(0, Math.min(sampleNumFrames - 1, newValue));
+
+        sample.markers[markerType] = clampedValue;
+        appliedCount++;
+    }
+
+    // Reload current sample to show updated marker
+    waveformState.markers = {...waveformState.samples[waveformState.currentIndex].markers};
+    drawWaveform();
+    updateMarkerInputs();
+
+    console.log(`Applied ${markerNames[markerType]} to ${appliedCount} samples`);
+    alert(`${markerNames[markerType]} applied to all ${appliedCount} samples!`);
+}
+
 async function finalizeConversion() {
     // Save current sample markers
     waveformState.samples[waveformState.currentIndex].markers = {...waveformState.markers};

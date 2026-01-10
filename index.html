@@ -116,21 +116,25 @@
                             <label>In Point:</label>
                             <input type="number" id="in-point-value" min="0" onchange="updateMarkerFromInput('in')">
                             <span class="time-display" id="in-point-time">0.000s</span>
+                            <button class="apply-all-btn" onclick="applyToAll('in')" title="Apply this In Point to all samples">Apply to All</button>
                         </div>
                         <div class="marker-value">
                             <label>Out Point:</label>
                             <input type="number" id="out-point-value" min="0" onchange="updateMarkerFromInput('out')">
                             <span class="time-display" id="out-point-time">0.000s</span>
+                            <button class="apply-all-btn" onclick="applyToAll('out')" title="Apply this Out Point to all samples">Apply to All</button>
                         </div>
                         <div class="marker-value">
                             <label>Loop Start:</label>
                             <input type="number" id="loop-start-value" min="0" onchange="updateMarkerFromInput('loopStart')">
                             <span class="time-display" id="loop-start-time">0.000s</span>
+                            <button class="apply-all-btn" onclick="applyToAll('loopStart')" title="Apply this Loop Start to all samples">Apply to All</button>
                         </div>
                         <div class="marker-value">
                             <label>Loop End:</label>
                             <input type="number" id="loop-end-value" min="0" onchange="updateMarkerFromInput('loopEnd')">
                             <span class="time-display" id="loop-end-time">0.000s</span>
+                            <button class="apply-all-btn" onclick="applyToAll('loopEnd')" title="Apply this Loop End to all samples">Apply to All</button>
                         </div>
                     </div>
 
