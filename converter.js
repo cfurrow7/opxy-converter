@@ -1174,6 +1174,16 @@ function drawMarkers(numFrames) {
     ctx.fillText(`${waveformState.crossfade}%`, crossfadeHandleX, crossfadeHandleY + crossfadeHandleSize / 2);
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
+
+    // Draw tune indicator in top-left corner if not zero
+    if (waveformState.tune !== 0) {
+        const tuneText = `Tune: ${waveformState.tune > 0 ? '+' : ''}${waveformState.tune} cents`;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+        ctx.fillRect(5, 35, ctx.measureText(tuneText).width + 16, 24);
+        ctx.fillStyle = '#fbbf24'; // Yellow color for tune
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(tuneText, 13, 51);
+    }
 }
 
 function onCanvasMouseDown(e) {
@@ -1533,10 +1543,8 @@ function updateSlider(settingType) {
     sample.gain = waveformState.gain;
     sample.tune = waveformState.tune;
 
-    // Redraw waveform to show gain changes
-    if (settingType === 'gain') {
-        drawWaveform();
-    }
+    // Redraw waveform to show visual changes
+    drawWaveform();
 }
 
 function updatePlaybackSettings() {
