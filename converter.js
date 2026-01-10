@@ -1013,7 +1013,7 @@ function drawWaveform() {
     const endFrame = Math.min(numFrames, startFrame + width * framesPerPixel * waveformState.zoom);
 
     // Draw waveform
-    ctx.strokeStyle = '#60a5fa';
+    ctx.strokeStyle = '#cccccc';
     ctx.lineWidth = 1;
     ctx.beginPath();
 
@@ -1086,10 +1086,10 @@ function drawMarkers(numFrames) {
 
     // Draw marker lines and labels
     const markerDefs = [
-        { key: 'in', color: '#4ade80', label: 'In' },
-        { key: 'out', color: '#f87171', label: 'Out' },
-        { key: 'loopStart', color: '#60a5fa', label: 'Loop Start' },
-        { key: 'loopEnd', color: '#a78bfa', label: 'Loop End' }
+        { key: 'in', color: '#F94327', label: 'In' },
+        { key: 'out', color: '#ffffff', label: 'Out' },
+        { key: 'loopStart', color: '#F94327', label: 'Loop Start' },
+        { key: 'loopEnd', color: '#ffffff', label: 'Loop End' }
     ];
 
     for (const def of markerDefs) {
