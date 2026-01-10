@@ -109,6 +109,7 @@
                         <button onclick="zoomIn()">🔍+</button>
                         <button onclick="zoomOut()">🔍-</button>
                         <button onclick="resetZoom()">Reset Zoom</button>
+                        <button onclick="resetToInitial()" style="background: #ef4444;">Reset to Initial</button>
                     </div>
 
                     <div class="marker-values">
@@ -151,6 +152,18 @@
                             <label for="loop-crossfade">Loop Crossfade (frames):</label>
                             <input type="number" id="loop-crossfade" min="0" max="10000" value="0" onchange="updatePlaybackSettings()">
                             <button class="apply-all-btn" onclick="applyPlaybackToAll('crossfade')" title="Apply crossfade setting to all samples">Apply to All</button>
+                        </div>
+                        <div class="setting-row">
+                            <label for="sample-gain">Gain (dB):</label>
+                            <input type="number" id="sample-gain" min="-60" max="12" step="0.1" value="0" onchange="updatePlaybackSettings()">
+                            <span class="setting-value" id="gain-display">0.0 dB</span>
+                            <button class="apply-all-btn" onclick="applyPlaybackToAll('gain')" title="Apply gain setting to all samples">Apply to All</button>
+                        </div>
+                        <div class="setting-row">
+                            <label for="sample-tune">Tune (cents):</label>
+                            <input type="number" id="sample-tune" min="-100" max="100" value="0" onchange="updatePlaybackSettings()">
+                            <span class="setting-value" id="tune-display">0 cents</span>
+                            <button class="apply-all-btn" onclick="applyPlaybackToAll('tune')" title="Apply tuning to all samples">Apply to All</button>
                         </div>
                     </div>
 

@@ -513,6 +513,12 @@ summary:hover {
     border-color: #667eea;
 }
 
+.setting-value {
+    font-size: 0.85em;
+    color: #666;
+    min-width: 60px;
+}
+
 @media (max-width: 600px) {
     .mode-buttons {
         grid-template-columns: 1fr;

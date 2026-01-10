@@ -717,7 +717,7 @@ async function downloadPreset() {
 // ============================================================================
 
 let waveformState = {
-    samples: [],           // Array of {audioData, wavInfo, note, noteName, filename, markers, reverse, crossfade}
+    samples: [],           // Array of {audioData, wavInfo, note, noteName, filename, markers, reverse, crossfade, gain, tune}
     currentIndex: 0,
     audioContext: null,
     audioBuffer: null,
@@ -734,6 +734,8 @@ let waveformState = {
     },
     reverse: false,
     crossfade: 0,
+    gain: 0,
+    tune: 0,
     isDragging: false,
     dragMarker: null
 };
@@ -822,16 +824,28 @@ function loadCurrentSample() {
     if (sample.crossfade === undefined) {
         sample.crossfade = 0;
     }
+    if (sample.gain === undefined) {
+        sample.gain = 0;
+    }
+    if (sample.tune === undefined) {
+        sample.tune = 0;
+    }
 
     waveformState.markers = {...sample.markers};
     waveformState.reverse = sample.reverse;
     waveformState.crossfade = sample.crossfade;
+    waveformState.gain = sample.gain;
+    waveformState.tune = sample.tune;
     waveformState.zoom = 1;
     waveformState.offsetX = 0;
 
     // Update playback UI
     document.getElementById('reverse-playback').checked = waveformState.reverse;
     document.getElementById('loop-crossfade').value = waveformState.crossfade;
+    document.getElementById('sample-gain').value = waveformState.gain;
+    document.getElementById('sample-tune').value = waveformState.tune;
+    document.getElementById('gain-display').textContent = `${waveformState.gain.toFixed(1)} dB`;
+    document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
 
     // Decode audio for playback
     decodeAudioForPlayback(sample);
@@ -1122,6 +1136,8 @@ function prevSample() {
     waveformState.samples[waveformState.currentIndex].markers = {...waveformState.markers};
     waveformState.samples[waveformState.currentIndex].reverse = waveformState.reverse;
     waveformState.samples[waveformState.currentIndex].crossfade = waveformState.crossfade;
+    waveformState.samples[waveformState.currentIndex].gain = waveformState.gain;
+    waveformState.samples[waveformState.currentIndex].tune = waveformState.tune;
 
     if (waveformState.currentIndex > 0) {
         waveformState.currentIndex--;
@@ -1134,6 +1150,8 @@ function nextSample() {
     waveformState.samples[waveformState.currentIndex].markers = {...waveformState.markers};
     waveformState.samples[waveformState.currentIndex].reverse = waveformState.reverse;
     waveformState.samples[waveformState.currentIndex].crossfade = waveformState.crossfade;
+    waveformState.samples[waveformState.currentIndex].gain = waveformState.gain;
+    waveformState.samples[waveformState.currentIndex].tune = waveformState.tune;
 
     if (waveformState.currentIndex < waveformState.samples.length - 1) {
         waveformState.currentIndex++;
@@ -1185,6 +1203,45 @@ function resetZoom() {
     drawWaveform();
 }
 
+function resetToInitial() {
+    const sample = waveformState.samples[waveformState.currentIndex];
+    const numFrames = Math.floor(sample.audioData.byteLength /
+        (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
+
+    // Reset to initial auto-detected settings
+    sample.markers = {
+        in: 0,
+        out: numFrames - 1,
+        loopStart: 0,
+        loopEnd: Math.max(0, numFrames - 2000)
+    };
+    sample.reverse = false;
+    sample.crossfade = 0;
+    sample.gain = 0;
+    sample.tune = 0;
+
+    // Update state
+    waveformState.markers = {...sample.markers};
+    waveformState.reverse = sample.reverse;
+    waveformState.crossfade = sample.crossfade;
+    waveformState.gain = sample.gain;
+    waveformState.tune = sample.tune;
+
+    // Update UI
+    document.getElementById('reverse-playback').checked = false;
+    document.getElementById('loop-crossfade').value = 0;
+    document.getElementById('sample-gain').value = 0;
+    document.getElementById('sample-tune').value = 0;
+    document.getElementById('gain-display').textContent = '0.0 dB';
+    document.getElementById('tune-display').textContent = '0 cents';
+
+    // Redraw
+    drawWaveform();
+    updateMarkerInputs();
+
+    log(`Reset sample ${sample.noteName} to initial settings`);
+}
+
 function applyToAll(markerType) {
     // Save current sample's markers first
     waveformState.samples[waveformState.currentIndex].markers = {...waveformState.markers};
@@ -1197,21 +1254,12 @@ function applyToAll(markerType) {
     // Calculate the relative position (0.0 to 1.0)
     const relativePosition = currentValue / currentNumFrames;
 
-    // Confirm with user
     const markerNames = {
         'in': 'In Point',
         'out': 'Out Point',
         'loopStart': 'Loop Start',
         'loopEnd': 'Loop End'
     };
-
-    const confirmed = confirm(
-        `Apply ${markerNames[markerType]} at ${(relativePosition * 100).toFixed(1)}% to all ${waveformState.samples.length} samples?\n\n` +
-        `Current sample: frame ${currentValue} of ${currentNumFrames}\n` +
-        `This will set the ${markerNames[markerType]} proportionally for each sample based on its length.`
-    );
-
-    if (!confirmed) return;
 
     // Apply to all samples
     let appliedCount = 0;
@@ -1247,21 +1295,28 @@ function applyToAll(markerType) {
     drawWaveform();
     updateMarkerInputs();
 
-    console.log(`Applied ${markerNames[markerType]} to ${appliedCount} samples`);
-    alert(`${markerNames[markerType]} applied to all ${appliedCount} samples!`);
+    log(`Applied ${markerNames[markerType]} to ${appliedCount} samples`);
 }
 
 function updatePlaybackSettings() {
     // Update current state
     waveformState.reverse = document.getElementById('reverse-playback').checked;
     waveformState.crossfade = parseInt(document.getElementById('loop-crossfade').value);
+    waveformState.gain = parseFloat(document.getElementById('sample-gain').value);
+    waveformState.tune = parseInt(document.getElementById('sample-tune').value);
+
+    // Update displays
+    document.getElementById('gain-display').textContent = `${waveformState.gain.toFixed(1)} dB`;
+    document.getElementById('tune-display').textContent = `${waveformState.tune} cents`;
 
     // Save to current sample
     const sample = waveformState.samples[waveformState.currentIndex];
     sample.reverse = waveformState.reverse;
     sample.crossfade = waveformState.crossfade;
+    sample.gain = waveformState.gain;
+    sample.tune = waveformState.tune;
 
-    console.log(`Updated playback: reverse=${waveformState.reverse}, crossfade=${waveformState.crossfade}`);
+    console.log(`Updated playback: reverse=${waveformState.reverse}, crossfade=${waveformState.crossfade}, gain=${waveformState.gain}dB, tune=${waveformState.tune}cents`);
 }
 
 function applyPlaybackToAll(settingType) {
@@ -1270,41 +1325,65 @@ function applyPlaybackToAll(settingType) {
 
     const settingNames = {
         'reverse': 'Reverse Playback',
-        'crossfade': 'Loop Crossfade'
+        'crossfade': 'Loop Crossfade',
+        'gain': 'Gain',
+        'tune': 'Tuning'
     };
 
-    const currentValue = settingType === 'reverse' ? waveformState.reverse : waveformState.crossfade;
-    const valueText = settingType === 'reverse' ?
-        (currentValue ? 'ON' : 'OFF') :
-        `${currentValue} frames`;
+    let currentValue, valueText;
 
-    const confirmed = confirm(
-        `Apply ${settingNames[settingType]} (${valueText}) to all ${waveformState.samples.length} samples?`
-    );
-
-    if (!confirmed) return;
+    switch (settingType) {
+        case 'reverse':
+            currentValue = waveformState.reverse;
+            valueText = currentValue ? 'ON' : 'OFF';
+            break;
+        case 'crossfade':
+            currentValue = waveformState.crossfade;
+            valueText = `${currentValue} frames`;
+            break;
+        case 'gain':
+            currentValue = waveformState.gain;
+            valueText = `${currentValue.toFixed(1)} dB`;
+            break;
+        case 'tune':
+            currentValue = waveformState.tune;
+            valueText = `${currentValue} cents`;
+            break;
+    }
 
     // Apply to all samples
     let appliedCount = 0;
     for (let i = 0; i < waveformState.samples.length; i++) {
         const sample = waveformState.samples[i];
 
-        if (settingType === 'reverse') {
-            sample.reverse = waveformState.reverse;
-        } else if (settingType === 'crossfade') {
-            sample.crossfade = waveformState.crossfade;
+        switch (settingType) {
+            case 'reverse':
+                sample.reverse = waveformState.reverse;
+                break;
+            case 'crossfade':
+                sample.crossfade = waveformState.crossfade;
+                break;
+            case 'gain':
+                sample.gain = waveformState.gain;
+                break;
+            case 'tune':
+                sample.tune = waveformState.tune;
+                break;
         }
 
         appliedCount++;
     }
 
-    console.log(`Applied ${settingNames[settingType]} to ${appliedCount} samples`);
-    alert(`${settingNames[settingType]} applied to all ${appliedCount} samples!`);
+    log(`Applied ${settingNames[settingType]} (${valueText}) to ${appliedCount} samples`);
 }
 
 async function finalizeConversion() {
-    // Save current sample markers
+    // Save current sample markers and settings
     waveformState.samples[waveformState.currentIndex].markers = {...waveformState.markers};
+    waveformState.samples[waveformState.currentIndex].reverse = waveformState.reverse;
+    waveformState.samples[waveformState.currentIndex].crossfade = waveformState.crossfade;
+    waveformState.samples[waveformState.currentIndex].gain = waveformState.gain;
+    waveformState.samples[waveformState.currentIndex].tune = waveformState.tune;
 
     hideWaveformEditor();
     showProgress();
@@ -1353,7 +1432,9 @@ async function finalizeConversion() {
                 loopStart: trimmedLoopStart,
                 loopEnd: Math.min(trimmedLoopEnd, numFrames - 1),
                 reverse: sample.reverse || false,
-                crossfade: sample.crossfade || 0
+                crossfade: sample.crossfade || 0,
+                gain: sample.gain || 0,
+                tune: sample.tune || 0
             });
 
             setProgress(10 + (i + 1) / waveformState.samples.length * 80);
@@ -1394,7 +1475,8 @@ async function createPresetWithLoops(presetName, slices, sampleRate) {
             "loop.enabled": true,
             "loop.onrelease": true,
             "loop.crossfade": slice.crossfade,
-            "gain": 0,
+            "gain": slice.gain,
+            "tune": slice.tune,
             "reverse": slice.reverse,
             "sample.start": 0,
             "sample.end": framecount,
