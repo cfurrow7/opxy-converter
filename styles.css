@@ -513,7 +513,7 @@ summary:hover {
 
 .time-display {
     font-size: 0.8em;
-    color: #999999;
+    color: #cccccc;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 300;
 }
@@ -638,7 +638,7 @@ summary:hover {
     font-size: 0.85em;
     color: #ffffff;
     min-width: 70px;
-    font-family: 'Courier New', monospace;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: bold;
 }
 
@@ -657,7 +657,7 @@ summary:hover {
     cursor: pointer;
     font-size: 0.75em;
     transition: all 0.2s;
-    font-family: 'Courier New', monospace;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: bold;
 }
 
@@ -740,7 +740,7 @@ summary:hover {
     z-index: 10000;
     animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s;
     pointer-events: none;
-    font-family: 'Courier New', monospace;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     text-transform: uppercase;
 }
 
