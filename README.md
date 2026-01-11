@@ -4,7 +4,7 @@ A browser-based tool to convert multisamples to OP-XY format with automatic sile
 
 **🌐 Live Demo:** [https://cfurrow7.github.io/opxy-converter](https://cfurrow7.github.io/opxy-converter)
 
-**Built to convert patches created with [Tyler Neely's TV-7 sampler](https://tylerneely.com/tv7/tv7.html)** - a browser-based sampling tool that outputs individual WAV files per note.
+**Built to convert patches created with [Tyler Neely's TV-7 sampler](https://tylerneely.com/tv7/tv7.html)** - a browser-based sampling tool that outputs `.elmulti` and `.wav` files. This converter breaks them into individual sample hits for the OP-XY.
 
 ## Features
 
