@@ -34,7 +34,7 @@ h1 {
     margin-bottom: 8px;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 200;
-    letter-spacing: 0.5px;
+    letter-spacing: 2px;
     text-transform: uppercase;
 }
 
@@ -43,7 +43,7 @@ h1 {
     color: #ffffff;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 300;
-    letter-spacing: 0.3px;
+    letter-spacing: 1.5px;
 }
 
 main {
@@ -57,7 +57,7 @@ h2 {
     font-size: 1.4em;
     font-weight: 300;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.5px;
 }
 
 h3 {
@@ -214,7 +214,7 @@ input[type="text"]:focus {
     margin-top: 10px;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.5px;
 }
 
 .convert-btn:hover:not(:disabled), .download-btn:hover {
