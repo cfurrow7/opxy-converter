@@ -110,27 +110,27 @@
                             <label>In Point:</label>
                             <input type="number" id="in-point-value" min="0" onchange="updateMarkerFromInput('in')">
                             <span class="time-display" id="in-point-time">0.000s</span>
-                            <button class="apply-all-btn" onclick="applyToAll('in')" title="Apply this In Point to all samples">Apply to All</button>
                         </div>
                         <div class="marker-value">
                             <label>Out Point:</label>
                             <input type="number" id="out-point-value" min="0" onchange="updateMarkerFromInput('out')">
                             <span class="time-display" id="out-point-time">0.000s</span>
-                            <button class="apply-all-btn" onclick="applyToAll('out')" title="Apply this Out Point to all samples">Apply to All</button>
                         </div>
                         <div class="marker-value">
                             <label>Loop Start:</label>
                             <input type="number" id="loop-start-value" min="0" onchange="updateMarkerFromInput('loopStart')">
                             <span class="time-display" id="loop-start-time">0.000s</span>
-                            <button class="apply-all-btn" onclick="applyToAll('loopStart')" title="Apply this Loop Start to all samples">Apply to All</button>
                         </div>
                         <div class="marker-value">
                             <label>Loop End:</label>
                             <input type="number" id="loop-end-value" min="0" onchange="updateMarkerFromInput('loopEnd')">
                             <span class="time-display" id="loop-end-time">0.000s</span>
-                            <button class="apply-all-btn" onclick="applyToAll('loopEnd')" title="Apply this Loop End to all samples">Apply to All</button>
                         </div>
                     </div>
+
+                    <button class="apply-all-master-btn" onclick="applyAllSettingsToAll()" title="Apply all current settings (markers & playback) to all samples">
+                        Apply All Settings to All Samples
+                    </button>
 
                     <div class="playback-settings">
                         <h4>Playback Settings</h4>
@@ -139,13 +139,11 @@
                                 <input type="checkbox" id="reverse-playback" onchange="updatePlaybackSettings()">
                                 Reverse Playback
                             </label>
-                            <button class="apply-all-btn" onclick="applyPlaybackToAll('reverse')" title="Apply reverse setting to all samples">Apply to All</button>
                         </div>
                         <div class="setting-row">
                             <label for="loop-crossfade">Loop Crossfade:</label>
                             <input type="range" id="loop-crossfade-slider" min="0" max="100" value="0" oninput="updateSlider('crossfade')">
                             <span class="setting-value" id="crossfade-display">0%</span>
-                            <button class="apply-all-btn" onclick="applyPlaybackToAll('crossfade')" title="Apply crossfade setting to all samples">Apply to All</button>
                             <div class="creative-controls">
                                 <button class="creative-btn" onclick="applyGradient('crossfade', 'linear')" title="Fade from low to high">↗ Fade In</button>
                                 <button class="creative-btn" onclick="applyGradient('crossfade', 'reverse')" title="Fade from high to low">↘ Fade Out</button>
@@ -157,7 +155,6 @@
                             <label for="sample-gain">Gain:</label>
                             <input type="range" id="sample-gain-slider" min="-60" max="12" step="0.1" value="0" oninput="updateSlider('gain')">
                             <span class="setting-value" id="gain-display">0.0 dB</span>
-                            <button class="apply-all-btn" onclick="applyPlaybackToAll('gain')" title="Apply gain setting to all samples">Apply to All</button>
                             <div class="creative-controls">
                                 <button class="creative-btn" onclick="applyGradient('gain', 'linear')" title="Fade from quiet to loud">↗ Fade In</button>
                                 <button class="creative-btn" onclick="applyGradient('gain', 'reverse')" title="Fade from loud to quiet">↘ Fade Out</button>
@@ -169,7 +166,6 @@
                             <label for="sample-tune">Tune:</label>
                             <input type="range" id="sample-tune-slider" min="-100" max="100" value="0" oninput="updateSlider('tune')">
                             <span class="setting-value" id="tune-display">0 cents</span>
-                            <button class="apply-all-btn" onclick="applyPlaybackToAll('tune')" title="Apply tuning to all samples">Apply to All</button>
                             <div class="creative-controls">
                                 <button class="creative-btn" onclick="applyGradient('tune', 'linear')" title="Detune up progressively">↗ Detune Up</button>
                                 <button class="creative-btn" onclick="applyGradient('tune', 'reverse')" title="Detune down progressively">↘ Detune Down</button>

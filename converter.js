@@ -1464,6 +1464,66 @@ function resetToInitial() {
     showToast(`✓ Reset ${sample.noteName} to initial settings`);
 }
 
+function applyAllSettingsToAll() {
+    // Save current sample's settings
+    waveformState.samples[waveformState.currentIndex].markers = {...waveformState.markers};
+    updatePlaybackSettings();
+
+    const currentSample = waveformState.samples[waveformState.currentIndex];
+    const currentNumFrames = Math.floor(currentSample.audioData.byteLength /
+        (currentSample.wavInfo.channels * currentSample.wavInfo.bitsPerSample / 8));
+
+    // Calculate relative positions for all markers
+    const relativePositions = {
+        in: waveformState.markers.in / currentNumFrames,
+        out: waveformState.markers.out / currentNumFrames,
+        loopStart: waveformState.markers.loopStart / currentNumFrames,
+        loopEnd: waveformState.markers.loopEnd / currentNumFrames
+    };
+
+    // Apply to all samples
+    let appliedCount = 0;
+    for (let i = 0; i < waveformState.samples.length; i++) {
+        const sample = waveformState.samples[i];
+
+        // Calculate sample frame count
+        const sampleNumFrames = Math.floor(sample.audioData.byteLength /
+            (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
+
+        // Initialize and apply markers
+        if (!sample.markers) {
+            sample.markers = {
+                in: 0,
+                out: sampleNumFrames - 1,
+                loopStart: 0,
+                loopEnd: sampleNumFrames - 1
+            };
+        }
+
+        // Apply all markers based on relative positions
+        sample.markers.in = Math.max(0, Math.min(sampleNumFrames - 1, Math.round(relativePositions.in * sampleNumFrames)));
+        sample.markers.out = Math.max(0, Math.min(sampleNumFrames - 1, Math.round(relativePositions.out * sampleNumFrames)));
+        sample.markers.loopStart = Math.max(0, Math.min(sampleNumFrames - 1, Math.round(relativePositions.loopStart * sampleNumFrames)));
+        sample.markers.loopEnd = Math.max(0, Math.min(sampleNumFrames - 1, Math.round(relativePositions.loopEnd * sampleNumFrames)));
+
+        // Apply playback settings
+        sample.reverse = waveformState.reverse;
+        sample.crossfade = waveformState.crossfade;
+        sample.gain = waveformState.gain;
+        sample.tune = waveformState.tune;
+
+        appliedCount++;
+    }
+
+    // Reload current sample to show updated settings
+    waveformState.markers = {...waveformState.samples[waveformState.currentIndex].markers};
+    drawWaveform();
+    updateMarkerInputs();
+
+    log(`Applied all settings (markers & playback) to ${appliedCount} samples`);
+    showToast(`✓ All settings applied to ${appliedCount} samples`);
+}
+
 function applyToAll(markerType) {
     // Save current sample's markers first
     waveformState.samples[waveformState.currentIndex].markers = {...waveformState.markers};
