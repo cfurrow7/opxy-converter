@@ -1148,7 +1148,7 @@ function drawMarkers(numFrames) {
     const crossfadeWidth = width * crossfadePercentage; // 100% crossfade = full width
 
     // Draw diagonal crossfade line (from bottom-right to top-left)
-    ctx.strokeStyle = '#f59e0b';
+    ctx.strokeStyle = '#F94327';
     ctx.lineWidth = 4;
     ctx.setLineDash([5, 3]); // Dashed line
     ctx.beginPath();
@@ -1163,7 +1163,7 @@ function drawMarkers(numFrames) {
     const crossfadeHandleY = height / 2 - crossfadeHandleSize / 2;
 
     // Draw crossfade handle rectangle
-    ctx.fillStyle = '#f59e0b'; // Orange color
+    ctx.fillStyle = '#F94327'; // Orange color
     ctx.fillRect(crossfadeHandleX - crossfadeHandleSize / 2, crossfadeHandleY, crossfadeHandleSize, crossfadeHandleSize);
 
     // Draw handle border
