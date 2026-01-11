@@ -388,7 +388,7 @@ summary:hover {
 #waveform-canvas {
     display: block;
     width: 100%;
-    height: 400px;
+    height: 250px;
     cursor: crosshair;
 }
 
@@ -450,19 +450,19 @@ summary:hover {
 
 .control-group {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 15px;
     flex-wrap: wrap;
 }
 
 .control-group button {
-    padding: 12px 20px;
+    padding: 10px 16px;
     background: #404040;
     color: #ffffff;
     border: 2px solid #F94327;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 0.9em;
+    font-size: 0.85em;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 400;
     text-transform: uppercase;
@@ -474,17 +474,17 @@ summary:hover {
 
 .marker-values {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
 .marker-value {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 5px;
     background: #808080;
-    padding: 12px;
+    padding: 8px;
     border: 2px solid #333333;
 }
 
@@ -497,9 +497,9 @@ summary:hover {
 }
 
 .marker-value input[type="number"] {
-    padding: 10px;
+    padding: 6px;
     border: 2px solid #333333;
-    font-size: 0.9em;
+    font-size: 0.85em;
     background: #1a1a1a;
     color: #ffffff;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;

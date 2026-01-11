@@ -844,7 +844,7 @@ function initWaveformEditor() {
     // Set canvas size to match display size
     const rect = waveformState.canvas.getBoundingClientRect();
     waveformState.canvas.width = rect.width * window.devicePixelRatio;
-    waveformState.canvas.height = 300 * window.devicePixelRatio;
+    waveformState.canvas.height = 250 * window.devicePixelRatio;
     waveformState.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
     // Add event listeners (remove old ones first to avoid duplicates)
@@ -995,7 +995,7 @@ function drawWaveform() {
     const canvas = waveformState.canvas;
     const ctx = waveformState.ctx;
     const width = canvas.width / window.devicePixelRatio;
-    const height = 300;
+    const height = 250;
 
     // Clear canvas
     ctx.fillStyle = '#1a1a1a';
@@ -1073,7 +1073,7 @@ function drawWaveform() {
 
 function drawMarkers(numFrames) {
     const width = waveformState.canvas.width / window.devicePixelRatio;
-    const height = 300;
+    const height = 250;
     const ctx = waveformState.ctx;
 
     const markers = waveformState.markers;
@@ -1210,10 +1210,10 @@ function onCanvasMouseMove(e) {
 
     if (waveformState.isDragging && waveformState.dragMarker) {
         if (waveformState.dragMarker === 'crossfade') {
-            // Horizontal drag for crossfade (100% at left edge, 0% at right edge)
+            // Horizontal drag for crossfade (0% at right edge, 100% at left edge)
             const width = rect.width;
             const distanceFromRight = width - x;
-            const percentage = Math.max(0, Math.min(100, Math.round((1 - distanceFromRight / width) * 100)));
+            const percentage = Math.max(0, Math.min(100, Math.round((distanceFromRight / width) * 100)));
             waveformState.crossfade = percentage;
 
             // Update slider and display
@@ -1262,7 +1262,7 @@ function getMarkerAtPosition(x, y) {
         (sample.wavInfo.channels * sample.wavInfo.bitsPerSample / 8));
 
     const width = waveformState.canvas.width / window.devicePixelRatio;
-    const height = 300;
+    const height = 250;
     const startFrame = Math.floor(waveformState.offsetX * numFrames);
     const visibleFrames = numFrames / waveformState.zoom;
 
