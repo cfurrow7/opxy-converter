@@ -144,34 +144,16 @@
                             <label for="loop-crossfade">Loop Crossfade:</label>
                             <input type="range" id="loop-crossfade-slider" min="0" max="100" value="0" oninput="updateSlider('crossfade')">
                             <span class="setting-value" id="crossfade-display">0%</span>
-                            <div class="creative-controls">
-                                <button class="creative-btn" onclick="applyGradient('crossfade', 'linear')" title="Fade from low to high">↗ Fade In</button>
-                                <button class="creative-btn" onclick="applyGradient('crossfade', 'reverse')" title="Fade from high to low">↘ Fade Out</button>
-                                <button class="creative-btn" onclick="applyGradient('crossfade', 'exp')" title="Exponential curve">📈 Curve</button>
-                                <button class="creative-btn" onclick="randomizeAll('crossfade')" title="Random variation">🎲 Random</button>
-                            </div>
                         </div>
                         <div class="setting-row">
                             <label for="sample-gain">Gain:</label>
                             <input type="range" id="sample-gain-slider" min="-60" max="12" step="0.1" value="0" oninput="updateSlider('gain')">
                             <span class="setting-value" id="gain-display">0.0 dB</span>
-                            <div class="creative-controls">
-                                <button class="creative-btn" onclick="applyGradient('gain', 'linear')" title="Fade from quiet to loud">↗ Fade In</button>
-                                <button class="creative-btn" onclick="applyGradient('gain', 'reverse')" title="Fade from loud to quiet">↘ Fade Out</button>
-                                <button class="creative-btn" onclick="applyGradient('gain', 'exp')" title="Exponential curve">📈 Curve</button>
-                                <button class="creative-btn" onclick="randomizeAll('gain')" title="Random variation">🎲 Random</button>
-                            </div>
                         </div>
                         <div class="setting-row">
                             <label for="sample-tune">Tune:</label>
                             <input type="range" id="sample-tune-slider" min="-100" max="100" value="0" oninput="updateSlider('tune')">
                             <span class="setting-value" id="tune-display">0 cents</span>
-                            <div class="creative-controls">
-                                <button class="creative-btn" onclick="applyGradient('tune', 'linear')" title="Detune up progressively">↗ Detune Up</button>
-                                <button class="creative-btn" onclick="applyGradient('tune', 'reverse')" title="Detune down progressively">↘ Detune Down</button>
-                                <button class="creative-btn" onclick="applyGradient('tune', 'wave')" title="Wave pattern">〰 Wave</button>
-                                <button class="creative-btn" onclick="randomizeAll('tune')" title="Random variation">🎲 Random</button>
-                            </div>
                         </div>
                     </div>
 
