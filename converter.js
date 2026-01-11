@@ -1923,8 +1923,16 @@ async function finalizeConversion() {
         await createPresetWithLoops(presetName, processedSlices, sample.wavInfo.sampleRate);
         setProgress(100);
 
-        log('Conversion complete!');
-        showDownload();
+        log('Conversion complete! Starting download...');
+
+        // Auto-download after conversion
+        setTimeout(() => {
+            downloadPreset();
+            // Hide progress after download starts
+            setTimeout(() => {
+                hideProgress();
+            }, 1000);
+        }, 500);
     } catch (error) {
         log(`ERROR: ${error.message}`);
         console.error(error);
