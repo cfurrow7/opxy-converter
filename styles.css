@@ -688,45 +688,6 @@ summary:hover {
     border-color: #F94327;
 }
 
-/* Steve Reich Phasing Section */
-.playback-settings[style*="background: #fef3c7"] {
-    background: #808080 !important;
-    border: 2px solid #F94327 !important;
-}
-
-.playback-settings[style*="background: #fef3c7"] h4 {
-    color: #ffffff !important;
-}
-
-.playback-settings[style*="background: #fef3c7"] p {
-    color: #cccccc !important;
-}
-
-.playback-settings[style*="background: #fef3c7"] label {
-    color: #cccccc !important;
-}
-
-.playback-settings[style*="background: #fef3c7"] .setting-value {
-    color: #ffffff !important;
-}
-
-.playback-settings[style*="background: #fef3c7"] .apply-all-btn {
-    background: #404040 !important;
-    color: #ffffff !important;
-    border: 2px solid #F94327 !important;
-}
-
-.playback-settings[style*="background: #fef3c7"] .creative-btn {
-    background: #1a1a1a !important;
-    color: #ffffff !important;
-    border: 2px solid #F94327 !important;
-}
-
-.playback-settings[style*="background: #fef3c7"] .creative-btn:hover {
-    background: #404040 !important;
-    color: #ffffff !important;
-}
-
 /* Button click feedback animation */
 @keyframes buttonPulse {
     0% {
